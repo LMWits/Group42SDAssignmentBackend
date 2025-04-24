@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "@azure/msal-node": "^3.5.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-jwt": "^8.5.1",
+    "jwks-rsa": "^3.2.0"
+  },
+  "devDependencies": {
+    "mocha": "^11.1.0",
+    "nyc": "^17.1.0"
+  },
+  "scripts": {
+    "start": "node ./index.js", 
+    "test": "mocha --recursive 'tests/**/*.js'",
+    "coverage": "nyc --reporter=lcov --reporter=text-summary mocha --recursive 'tests/**/*.js'"
+  }
+}

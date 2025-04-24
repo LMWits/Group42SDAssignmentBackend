@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Constitutional Archive</title>
+  <style>
+    /* Simple styling for layout */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background-color: #004080;
+      color: white;
+    }
+    button {
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .uploadBtn, .organiseBtn, .profileBtn {
+      background-color: white;
+      color: #004080;
+      font-weight: bold;
+    }
+    .search-input {
+      padding: 7px 10px;
+      border-radius: 4px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <h1 class="title">Constitutional Archive</h1>
+      <!-- <button class="organiseButton">Organise Files</button> -->
+      <button onclick="window.location.href='upload.html'">Upload File</button>
+      <input type="text" class="search-input" placeholder="Search files..." id="searchInput" />
+      <button class="searchButtonn">Search</button>
+    </div>
+    <div class="header-right">
+      <button class="profileButton">User Profile</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="folderDisplay" ></div>
+    <div id="fileDisplay"></div>
+  </main>
+
+  <script src="adminHP-script.js"></script>
+</body>
+</html>
