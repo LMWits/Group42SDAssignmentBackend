@@ -64,6 +64,15 @@ app.get('/files', async (req, res) => {
   }
 });
 
+app.get('/ping', async (req, res) => {
+  try {
+    res.status(200).send("Pong");
+
+  } catch (err) {
+    res.status(500).send("Error pinging");
+  }
+});
+
 //MongoDB query: fetches files json info (files that are without paths/not in folder)
 app.get('/fileWithNoFolder', async (req, res) => {
   try {
