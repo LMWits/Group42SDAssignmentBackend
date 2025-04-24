@@ -47,7 +47,15 @@ jobs:
         npm install
         npm run build --if-present
         npm run test --if-present
-
+    - name: Run tests with coverage
+      run: npm run coverage
+      continue-on-error: false
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: coverage-report
+        path: ./coverage
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v4
       with:
