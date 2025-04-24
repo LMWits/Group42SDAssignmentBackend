@@ -11,6 +11,24 @@ const fs = require('fs');
 app.use(cors()); //allow CORS from any origin
 app.use(express.json()); //parse JSON bodies
 
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // Don't exit the process in production
+  // process.exit(1);
+});
+
+// For your server startup
+const server = app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
+
+server.on('error', (error) => {
+  console.error('Server error:', error);
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${port} is already in use`);
+  }
+});
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
