@@ -20,9 +20,9 @@
     "coverage": "nyc --reporter=lcov --reporter=text-summary mocha --recursive 'tests/**/*.js'"
   },
   "nyc": {
-    "include": ["*.js"],
-    "exclude": ["tests/**/*.js", "public/**"],
+    "include": ["tests/**/*.js"],
+    "exclude": ["public/**"],
     "reporter": ["lcov", "text-summary"],
-    "all": true
+    "all": false
   }
 }
