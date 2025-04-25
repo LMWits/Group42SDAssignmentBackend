@@ -117,6 +117,7 @@ html, body {
     color: black;
     border-radius: 40px;
     background: #ffff01;
+    border:none;
 }
 
 .h2AdminHP
