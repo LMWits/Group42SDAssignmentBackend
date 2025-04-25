@@ -28,23 +28,6 @@
     <p id="status"></p>
 
     <script src="upload.js"></script>
-    <!--script to handle custom file input-->
-    <script>
-        document.getElementById('customFileLabel').addEventListener('click', function(event) {
-            event.preventDefault(); 
-            const fileInput = document.getElementById('file');
-            if (fileInput.files.length > 0) {
-                fileInput.value = '';
-            }
-            fileInput.click();
-        });
-
-        document.getElementById('file').addEventListener('change', function () {
-            const fileName = this.files[0] ? this.files[0].name : 'No file chosen';
-            document.getElementById('fileNameDisplay').textContent = fileName;
-        });
-
-    </script>
   
 </body>
 </html> 
