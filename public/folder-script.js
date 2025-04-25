@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
           folderDisplay.innerHTML = `<h2>All subfolders in ${folder}</h2>`;
 
           folders.forEach(folder => {
-              const folderDiv = document.createElement("div");
+              const folderDiv = document.createElement("section");
               folderDiv.textContent = folder;
               folderDiv.className = "folder";
               folderDiv.style.margin = "10px";
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       })
       .catch(error => {
-          folderDisplay.innerHTML = "<p style='color:red;'>Error loading folders from server.</p>";
+          folderDisplay.innerHTML = "<p style=' text-align:center; margin:10px; border-radius:40px; width:250px; background:red ;color:white;'>Error loading files from server.</p>";
           console.error("Fetch error:", error);
       });
 
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
           });
       })
       .catch(err => {
-          fileDisplay.innerHTML = "<p style='color:red;'>Error loading files</p>";
+          fileDisplay.innerHTML = "<p style=' text-align:center; margin:10px; border-radius:40px; width:250px; background:red ;color:white;'>Error loading files.</p>";
           console.error(err);
       });
 
