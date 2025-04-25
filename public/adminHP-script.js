@@ -46,7 +46,7 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/file
   
           files.forEach((file,i) => {
             const fileCard = document.createElement("section");
-            folderDiv.className = "files";
+            fileCard.className = "files";
   
             fileCard.innerHTML = `
               <strong>Title:</strong> ${file.title}<br>
@@ -98,7 +98,7 @@ fetch("http://localhost:3000/files")
           //fileDisplay.innerHTML = ""; //Clear old results
   
           files.forEach((file,i) => {
-            const fileCard = document.createElement("div");
+            const fileCard = document.createElement("section");
             fileCard.style.border = "1px solid #ccc";
             fileCard.style.margin = "10px";
             fileCard.style.padding = "10px";
@@ -134,7 +134,7 @@ fetch("http://localhost:3000/files")
             });
         })
         .catch(error => {
-          fileDisplay.innerHTML = "<p style='color:red;'>Error loading files from server.</p>";
+          fileDisplay.innerHTML = "<p style=' text-align:center; margin:10px; border-radius:40px; width:250px; background:red ;color:white;'>Error loading folders from server.</p>";
           console.error("Fetch error:", error);
         });
 */
