@@ -46,11 +46,7 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/file
   
           files.forEach((file,i) => {
             const fileCard = document.createElement("section");
-            fileCard.style.border = "1px solid #ccc";
-            fileCard.style.margin = "10px";
-            fileCard.style.padding = "10px";
-            fileCard.style.borderRadius = "6px";
-            fileCard.style.backgroundColor = "#f9f9f9";
+            folderDiv.className = "files";
   
             fileCard.innerHTML = `
               <strong>Title:</strong> ${file.title}<br>
