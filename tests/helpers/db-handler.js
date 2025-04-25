@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 let mongod;
 let isConnected = false;
+let mongoServer;
 
 /**
  * Connect to the in-memory database.
@@ -12,6 +13,7 @@ module.exports.connect = async () => {
   if (isConnected) return;
   
   mongod = await MongoMemoryServer.create();
+  mongoServer = mongod; // Store reference for explicit cleanup
   const uri = mongod.getUri();
   
   // Disconnect from any existing connection first
@@ -19,10 +21,7 @@ module.exports.connect = async () => {
     await mongoose.disconnect();
   }
   
-  const mongooseOpts = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  };
+  const mongooseOpts = {};
 
   await mongoose.connect(uri, mongooseOpts);
   isConnected = true;
@@ -42,19 +41,32 @@ module.exports.connect = async () => {
  * Drop database, close the connection and stop mongod.
  */
 module.exports.closeDatabase = async () => {
-  if (mongoose.connection.readyState !== 0) {
-    await mongoose.connection.dropDatabase();
-    await mongoose.connection.close();
-  }
-  if (mongod) {
-    await mongod.stop();
-  }
-  isConnected = false;
-  
-  // Restore original mongoose.connect
-  if (mongoose._originalConnect) {
-    mongoose.connect = mongoose._originalConnect;
-    delete mongoose._originalConnect;
+  try {
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.connection.dropDatabase();
+      await mongoose.connection.close();
+    }
+    
+    if (mongod) {
+      await mongod.stop(true); // true parameter forces immediate stop
+    }
+    
+    // Add explicit call to stop mongo memory server
+    if (mongoServer) {
+      await mongoServer.stop();
+    }
+    
+    isConnected = false;
+    
+    // Restore original mongoose.connect
+    if (mongoose._originalConnect) {
+      mongoose.connect = mongoose._originalConnect;
+      delete mongoose._originalConnect;
+    }
+    
+    console.log('Test database connection closed successfully');
+  } catch (error) {
+    console.error('Error closing test database:', error);
   }
 };
 

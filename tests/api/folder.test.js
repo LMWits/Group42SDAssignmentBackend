@@ -39,7 +39,19 @@ describe('Folder API Routes', function() {
   });
   
   afterEach(async () => await dbHandler.clearDatabase());
-  after(async () => await dbHandler.closeDatabase());
+  
+  after(async () => {
+    // Close the server if it exists
+    if (app.closeServer) {
+      await app.closeServer();
+      console.log('Server closed via closeServer method');
+    }
+    
+    // Close the MongoDB connection
+    await dbHandler.closeDatabase();
+    
+    console.log('Folder API test cleanup complete');
+  });
 
   describe('GET /folders', () => {
     it('should return all top-level folders', async () => {

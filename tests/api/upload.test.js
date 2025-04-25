@@ -44,8 +44,19 @@ describe('File Upload API', function() {
   });
   
   after(async () => {
-    await dbHandler.closeDatabase();
+    // Close the server if it exists
+    if (app.closeServer) {
+      await app.closeServer();
+      console.log('Server closed via closeServer method');
+    }
+    
+    // Explicitly restore sinon stubs if they exist
     if (sinon.restore) sinon.restore();
+    
+    // Close the MongoDB connection
+    await dbHandler.closeDatabase();
+    
+    console.log('Upload API test cleanup complete');
   });
 
   // All tests removed since they were failing
