@@ -2,16 +2,16 @@
 <html lang="en">
 <head>
     <title>File Upload</title>
-     <link rel="stylesheet" href="style.css">
+     <link rel="stylesheet" href="upload-style.css">
 </head>
 <header> 
     <h1>File Upload</h1>
 </header>
 <body>
-    <h2>Upload any historical document that you wish to deploy</h2>
     <form id="uploadForm" enctype="multipart/form-data">
-        <label for="file">Choose file:</label>
-        <input type="file" id="file" name="file" required /><br/><br/>
+        <label for="file" id="customFileLabel" class="custom-file-label">Choose file</label>
+        <input type="file" id="file" name="file" required />
+        <output id="fileNameDisplay">No file chosen</output><br/>
       
         <label for="title">Title:</label>
         <input type="text" id="title" name="title" required /><br/><br/>
@@ -22,12 +22,29 @@
         <label for="Uploadpath">File Directory:</label>
         <input type="text" id="Uploadpath" name="Uploadpath"/><br/><br/>
 
-        <button type="submit">Upload</button>
+        <button type="submit">Upload File</button>
     </form>
   
     <p id="status"></p>
 
     <script src="upload.js"></script>
+    <!--script to handle custom file input-->
+    <script>
+        document.getElementById('customFileLabel').addEventListener('click', function(event) {
+            event.preventDefault(); 
+            const fileInput = document.getElementById('file');
+            if (fileInput.files.length > 0) {
+                fileInput.value = '';
+            }
+            fileInput.click();
+        });
+
+        document.getElementById('file').addEventListener('change', function () {
+            const fileName = this.files[0] ? this.files[0].name : 'No file chosen';
+            document.getElementById('fileNameDisplay').textContent = fileName;
+        });
+
+    </script>
   
 </body>
 </html> 
