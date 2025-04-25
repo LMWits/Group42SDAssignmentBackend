@@ -1,37 +1,101 @@
-header{
-    font-family:'Times New Roman', Times, serif;
-    text-align: center;
-    font-size: 50px;
-    color: rgb(134, 26, 26);
+* {
+    font-family: 'Segoe UI', sans-serif;
+    box-sizing: border-box;
 }
 
-body{
-    text-align: center;
-    font-family:'Times New Roman', Times, serif;
-    background-color: linen;
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: url(bg1.jpg);
+    background-size: cover;
 }
 
-input{
-    padding: 10px;
-    font-size: 16px;
-    width: 250px;
-}
-textarea
+.header
 {
-    padding: 10px;
-    font-size: 16px;
-    width: 250px;
-}
-button {
-    padding: 10px;
-    background-color: rgb(134, 26, 26);
-    color: white;
-    border: rgb(0, 0, 0);
-    cursor: pointer;
+    position: relative;
 }
 
-button:hover {
-    padding: 15px;
+.header-right {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.header-left {
+    background-color: rgba(0, 0, 8, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 60px 20px 20px 20px; /* more top padding */
+    text-align: center;
+    position: relative;
+}
+
+.header-left h1 {
+    color: white;
+    font-size: 40px;
+    margin: 0 0 40px 0;
+    white-space: nowrap;
+}
+
+
+.header-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-left .search-input {
+    width: 350px;
+    height: 30px;
+    background: transparent;
+    border-radius: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0 15px;
+    text-align: center;
+}
+
+.search-input::placeholder {
+    color: white;
+}
+
+.header-left button {
+    cursor: pointer;
     color: black;
-    border: black;
+    border-radius: 40px;
+    background: #ffff01;
+    border: none;
+    width: 200px;
+    height: 40px;
+    font-weight: 600;
+    margin-left: 20px;
+    margin-right: 20px;
+    font-size: medium;
+}
+
+.header-right button
+{
+    cursor: pointer;
+    color: black;
+    border-radius: 40px;
+    background: #ffff01;
+    border: none;
+    width: 200px;
+    height: 40px;
+    font-weight: 600;
+    font-size: medium;
+
+}
+
+.folder
+{
+    margin: 10px;
+    padding: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    background: transparent;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    color: white;
 }
