@@ -110,3 +110,11 @@ html, body {
     color: white;
 
 }
+
+.infobtn
+{
+    cursor: pointer;
+    color: black;
+    border-radius: 40px;
+    background: #ffff01;
+}

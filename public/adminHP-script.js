@@ -1,6 +1,6 @@
 /*
 1. Fetches all top level folders
-Displays them in folderDsiplay <div > found in <main> in adminHP.html 
+Displays them in folderDsiplay <div > found in <main> in adminHP.html
 */
 fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/folders")
         .then(response => {
@@ -11,12 +11,12 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/fold
         })
         .then(folders => {
           folderDisplay.innerHTML = "<h2>All top level folders</h2>";
-  
+
           folders.forEach(folder => {
             const folderDiv = document.createElement("section"); //create a <div> for each folder
             folderDiv.textContent = folder; //adds folder name stored in folder as text to <div> created in line above
             folderDiv.className = "folder";
-  
+
             //store folder name and go to folder.html when <div> clicked on
             folderDiv.addEventListener("click", () => {
               localStorage.setItem("currentFolder", folder);
@@ -31,8 +31,8 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/fold
           console.error("Fetch error:", error);
         });
 /*
-2. Fetches all 'filemetas' json files 
-Displays them in fileDisplay <div > found in <main> in adminHP.html 
+2. Fetches all 'filemetas' json files
+Displays them in fileDisplay <div > found in <main> in adminHP.html
 */
 fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/fileWithNoFolder")
         .then(response => {
@@ -43,17 +43,17 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/file
         })
         .then(files => {
           fileDisplay.innerHTML = "<h2>All Files</h2>"; //Clear old results
-  
+
           files.forEach((file,i) => {
             const fileCard = document.createElement("section");
             fileCard.className = "files";
-  
+
             fileCard.innerHTML = `
               <strong>Title:</strong> ${file.title}<br>
               <strong>Description:</strong> ${file.description}<br>
               <strong>Uploaded:</strong> ${new Date(file.uploadDate).toLocaleDateString()}<br>
-              <!-- 
-              <strong>Path:</strong> ${file.path?.join(" / ") || "None"}<br><br> 
+              <!--
+              <strong>Path:</strong> ${file.path?.join(" / ") || "None"}<br><br>
               <a href="${file.blobUrl}" target="_blank">🔗 View File</a><br><br>
               -->
               <button class="infoBtn" data-index="${i}">More Info</button>
@@ -67,10 +67,10 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/file
                 btn.addEventListener("click", (e) => {
                 const index = e.target.dataset.index;
                 const file = files[index];
-            
+
                 // Store file data in localStorage
                 localStorage.setItem("selectedFile", JSON.stringify(file));
-            
+
                 // Navigate to details.html
                 window.location.href = "details.html";
                 });
@@ -83,8 +83,8 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/file
 
 
 /*
-3. Fetches all 'filemetas' json files 
-Displays them in fileDisplay <div > found in <main> in adminHP.html 
+3. Fetches all 'filemetas' json files
+Displays them in fileDisplay <div > found in <main> in adminHP.html
 */
 /*
 fetch("http://localhost:3000/files")
@@ -96,7 +96,7 @@ fetch("http://localhost:3000/files")
         })
         .then(files => {
           //fileDisplay.innerHTML = ""; //Clear old results
-  
+
           files.forEach((file,i) => {
             const fileCard = document.createElement("section");
             fileCard.style.border = "1px solid #ccc";
@@ -104,13 +104,13 @@ fetch("http://localhost:3000/files")
             fileCard.style.padding = "10px";
             fileCard.style.borderRadius = "6px";
             fileCard.style.backgroundColor = "#f9f9f9";
-  
+
             fileCard.innerHTML = `
               <strong>Title:</strong> ${file.title}<br>
               <strong>Description:</strong> ${file.description}<br>
               <strong>Uploaded:</strong> ${new Date(file.uploadDate).toLocaleDateString()}<br>
-              <!-- 
-              <strong>Path:</strong> ${file.path?.join(" / ") || "None"}<br><br> 
+              <!--
+              <strong>Path:</strong> ${file.path?.join(" / ") || "None"}<br><br>
               <a href="${file.blobUrl}" target="_blank">🔗 View File</a><br><br>
               -->
               <button class="infoBtn" data-index="${i}">More Info</button>
@@ -124,10 +124,10 @@ fetch("http://localhost:3000/files")
                 btn.addEventListener("click", (e) => {
                 const index = e.target.dataset.index;
                 const file = files[index];
-            
+
                 // Store file data in localStorage
                 localStorage.setItem("selectedFile", JSON.stringify(file));
-            
+
                 // Navigate to details.html
                 window.location.href = "details.html";
                 });
