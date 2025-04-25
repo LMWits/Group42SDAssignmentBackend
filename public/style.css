@@ -96,6 +96,8 @@ html, body {
     border-radius: 6px;
     cursor: pointer;
     color: black;
+    width: 25%;
+    font-weight: 500px;
 }
 
 .files
