@@ -1,5 +1,5 @@
 // Add an onclick function to a button with an ID "uploadButton"
-document.getElementById("uploadButton").onclick = function () {
+document.getElementById("submit").onclick = function () {
     alert("Upload button clicked!");
 };
 
