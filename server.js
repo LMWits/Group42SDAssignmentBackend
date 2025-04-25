@@ -5,7 +5,7 @@ require("dotenv").config(); //configuration used for .env files
 
 const app = express();
 app.use(express.static('public'));
-const port = process.env.PORT || 3000;
+const port = process.env.NODE_ENV === 'test' ? 0 : (process.env.PORT || 3000);
 const fs = require('fs');
 
 app.use(cors()); //allow CORS from any origin
@@ -17,17 +17,36 @@ process.on('uncaughtException', (error) => {
   // process.exit(1);
 });
 
-// For your server startup
-const server = app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+// For your server startup - modified to store server reference and make it accessible
+let server;
+if (process.env.NODE_ENV !== 'test-setup') { // Only start the server if not in test-setup mode
+  server = app.listen(port, () => {
+    console.log(`Server running on port ${server.address().port}`);
+  });
 
-server.on('error', (error) => {
-  console.error('Server error:', error);
-  if (error.code === 'EADDRINUSE') {
-    console.error(`Port ${port} is already in use`);
+  server.on('error', (error) => {
+    console.error('Server error:', error);
+    if (error.code === 'EADDRINUSE') {
+      console.error(`Port ${port} is already in use`);
+    }
+  });
+}
+
+// Expose the server for testing purposes
+app.server = server;
+
+// Expose a method to close the server cleanly
+app.closeServer = async () => {
+  if (server) {
+    return new Promise((resolve) => {
+      server.close(() => {
+        console.log('Server closed successfully');
+        resolve();
+      });
+    });
   }
-});
+  return Promise.resolve();
+};
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)

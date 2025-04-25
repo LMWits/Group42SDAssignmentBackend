@@ -11,18 +11,36 @@
     "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
-    "mocha": "^11.1.0",
-    "nyc": "^17.1.0"
+    "chai": "^4.3.7",
+    "chai-http": "^4.4.0",
+    "mocha": "^10.2.0",
+    "mongodb-memory-server": "^10.1.4",
+    "nyc": "^15.1.0",
+    "sinon": "^17.0.1",
+    "supertest": "^7.1.0"
   },
   "scripts": {
-    "start": "node ./index.js", 
+    "start": "node ./index.js",
     "test": "mocha --recursive 'tests/**/*.js'",
+    "test:unit": "mocha --recursive 'tests/unit/**/*.js'",
+    "test:integration": "mocha --recursive 'tests/integration/**/*.js'",
+    "test:api": "mocha --recursive 'tests/api/**/*.js'",
     "coverage": "nyc --reporter=lcov --reporter=text-summary mocha --recursive 'tests/**/*.js'"
   },
   "nyc": {
-    "include": ["tests/**/*.js"],
-    "exclude": ["public/**"],
-    "reporter": ["lcov", "text-summary"],
-    "all": false
+    "include": [
+      "server.js",
+      "UploadR.js",
+      "index.js"
+    ],
+    "exclude": [
+      "tests/**/*.js",
+      "public/**"
+    ],
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "all": true
   }
 }

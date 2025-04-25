@@ -1,0 +1,2 @@
+This is a test file for upload functionality.
+Content doesn't matter much for our tests, we just need some bytes.
