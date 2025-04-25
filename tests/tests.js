@@ -11,3 +11,8 @@ const assert = require('assert');
     // "exclude": ["tests/**/*.js", "public/**"],
     // "reporter": ["lcov", "text-summary"],
     // "all": true
+
+    // "include": ["tests/**/*.js"],
+    // "exclude": ["public/**"],
+    // "reporter": ["lcov", "text-summary"],
+    // "all": false

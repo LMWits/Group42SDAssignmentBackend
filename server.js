@@ -5,7 +5,8 @@ require("dotenv").config(); //configuration used for .env files
 
 const app = express();
 app.use(express.static('public'));
-const port = process.env.PORT || 3000;
+// TODO: For testing purposes
+const port = process.env.NODE_ENV === 'test' ? 0 : (process.env.PORT || 3000);
 const fs = require('fs');
 
 app.use(cors()); //allow CORS from any origin
@@ -17,9 +18,9 @@ process.on('uncaughtException', (error) => {
   // process.exit(1);
 });
 
-// For your server startup
+// For your server startup TODO: For testing purposes
 const server = app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`Server running on port ${server.address().port}`);
 });
 
 server.on('error', (error) => {
