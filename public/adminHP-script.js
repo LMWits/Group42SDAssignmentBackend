@@ -13,15 +13,9 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/fold
           folderDisplay.innerHTML = "<h2>All top level folders</h2>";
   
           folders.forEach(folder => {
-            const folderDiv = document.createElement("div"); //create a <div> for each folder
+            const folderDiv = document.createElement("section"); //create a <div> for each folder
             folderDiv.textContent = folder; //adds folder name stored in folder as text to <div> created in line above
             folderDiv.className = "folder";
-            folderDiv.style.margin = "10px";
-            folderDiv.style.padding = "10px";
-            folderDiv.style.border = "1px solid #888";
-            folderDiv.style.borderRadius = "6px";
-            folderDiv.style.backgroundColor = "#eef";
-            folderDiv.style.cursor = "pointer";
   
             //store folder name and go to folder.html when <div> clicked on
             folderDiv.addEventListener("click", () => {
@@ -33,7 +27,7 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/fold
           });
         })
         .catch(error => {
-          folderDisplay.innerHTML = "<p style='color:red;'>Error loading folders from server.</p>";
+          folderDisplay.innerHTML = "<p style=' text-align:center; margin:10px; border-radius:40px; width:250px; background:red ;color:white;'>Error loading folders from server.</p>";
           console.error("Fetch error:", error);
         });
 /*
@@ -51,7 +45,7 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/file
           fileDisplay.innerHTML = "<h2>All Files</h2>"; //Clear old results
   
           files.forEach((file,i) => {
-            const fileCard = document.createElement("div");
+            const fileCard = document.createElement("section");
             fileCard.style.border = "1px solid #ccc";
             fileCard.style.margin = "10px";
             fileCard.style.padding = "10px";
@@ -87,7 +81,7 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/file
             });
         })
         .catch(error => {
-          fileDisplay.innerHTML = "<p style='color:red;'>Error loading files from server.</p>";
+          fileDisplay.innerHTML = "<p style=' text-align:center; margin:10px; border-radius:40px; width:250px; background:red ;color:white;'>Error loading folders from server.</p>";
           console.error("Fetch error:", error);
         });
 
