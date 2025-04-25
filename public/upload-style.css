@@ -1,0 +1,87 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-image: url('bg1.jpg');
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+}
+
+header {
+    text-align: center;
+    padding: 1.5rem;
+    background-color: rgba(0, 0, 50, 0.5);
+    color: white;
+    font-size: 1.5rem;
+}
+
+form {
+    max-width: 500px;
+    margin: 2rem auto;
+    background: transparent;
+    padding: 2rem;
+    border-radius: 15px;
+    background-color: rgba(0, 0, 50, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+input[type="text"],
+textarea {
+    width: 100%;
+    max-width: 500px; 
+    margin-left: auto; 
+    margin-right: auto;
+    display: block;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    box-sizing: border-box; 
+}
+
+input[type="file"] {
+    display: none;
+}
+
+label[for="file"] {
+    display: inline-block;
+    background-color: #fff;
+    color: #0b1d3a ;
+    font-weight: normal;
+    padding: 0.5rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 1rem;
+}
+
+output {
+    display: inline-block;
+    font-size: 1rem;
+    font-weight: normal;
+    color: #fff;
+    vertical-align: middle;
+}
+
+button {
+    background-color: #ffff01;
+    color: #0b1d3a ;
+    border: none;
+    width: 100%;
+    margin: 0;
+    padding: 0.65rem 2rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #e6b800;
+}
+
+
