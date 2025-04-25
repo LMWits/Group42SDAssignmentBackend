@@ -73,18 +73,14 @@ document.addEventListener("DOMContentLoaded", () => {
           fileDisplay.innerHTML = "<h2>Files</h2>";
 
           files.forEach((file, i) => {
-              const fileCard = document.createElement("div");
-              fileCard.style.border = "1px solid #ccc";
-              fileCard.style.margin = "10px";
-              fileCard.style.padding = "10px";
-              fileCard.style.borderRadius = "6px";
-              fileCard.style.backgroundColor = "#f9f9f9";
+              const fileCard = document.createElement("section");
+              fileCard.className = "folder";
 
               fileCard.innerHTML = `
                   <strong>Title:</strong> ${file.title}<br>
                   <strong>Description:</strong> ${file.description}<br>
                   <strong>Uploaded:</strong> ${new Date(file.uploadDate).toLocaleDateString()}<br>
-                  <strong>Path:</strong> ${file.path?.join(" / ") || "None"}<br><br> 
+                  <strong>Path:</strong> ${file.path?.join(" / ") || "None"}<br><br>
                   <button class="infoBtn" data-index="${i}">More Info</button>
               `;
 
