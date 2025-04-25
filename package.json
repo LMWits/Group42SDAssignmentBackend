@@ -18,5 +18,11 @@
     "start": "node ./index.js", 
     "test": "mocha --recursive 'tests/**/*.js'",
     "coverage": "nyc --reporter=lcov --reporter=text-summary mocha --recursive 'tests/**/*.js'"
+  },
+  "nyc": {
+    "include": ["*.js"],
+    "exclude": ["tests/**/*.js", "public/**"],
+    "reporter": ["lcov", "text-summary"],
+    "all": true
   }
 }
