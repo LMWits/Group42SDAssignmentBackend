@@ -1,8 +1,11 @@
 /*
 1. Fetches all top level folders
 Displays them in folderDsiplay <div > found in <main> in adminHP.html
+
+*Change fetch back to https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/folders
+
 */
-fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/folders")
+fetch("http://localhost:3000/folders")
         .then(response => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -10,7 +13,7 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/fold
           return response.json();
         })
         .then(folders => {
-          folderDisplay.innerHTML = "<h2>All top level folders</h2>";
+          folderDisplay.innerHTML = `<h2 style="color: white;">All top level folders</h2>`;
 
           folders.forEach(folder => {
             const folderDiv = document.createElement("section"); //create a <div> for each folder
@@ -31,10 +34,13 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/fold
           console.error("Fetch error:", error);
         });
 /*
-2. Fetches all 'filemetas' json files
+2. Fetches all 'filemetas' json files (with out folders)
 Displays them in fileDisplay <div > found in <main> in adminHP.html
+
+*Change fetch back to https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/fileWithNoFolder
+
 */
-fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/fileWithNoFolder")
+fetch("http://localhost:3000/fileWithNoFolder")
         .then(response => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -42,7 +48,7 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/file
           return response.json();
         })
         .then(files => {
-          fileDisplay.innerHTML = "<h2>All Files</h2>"; //Clear old results
+          fileDisplay.innerHTML = `<h2 style="color: white;" >All Files Without Folders</h2>`; //Clear old results
 
           files.forEach((file,i) => {
             const fileCard = document.createElement("section");
@@ -72,7 +78,7 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/file
                 localStorage.setItem("selectedFile", JSON.stringify(file));
 
                 // Navigate to details.html
-                window.location.href = "details.html";
+                window.location.href = "fileDetails.html";
                 });
             });
         })
