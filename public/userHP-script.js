@@ -84,7 +84,7 @@ fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/file
                 localStorage.setItem("selectedFile", JSON.stringify(file));
 
                 // Navigate to details.html
-                window.location.href = "fileDetailsAdmin.html";
+                window.location.href = "fileDetailsUser.html";
                 });
             });
         })

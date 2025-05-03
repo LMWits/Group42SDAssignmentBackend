@@ -54,10 +54,10 @@ Local - http://localhost:3000/folders/${encodeURIComponent(folder)}
           console.error("Fetch error:", error);
       });
 
-  // 2. fetch files in the cliked folder
-  /*
 
-*replace fetch with:
+// 2. fetch files in the clicked folder
+/*
+replace fetch with:
 remote - https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/folder/files/${encodeURIComponent(folder)}
 or
 local - http://localhost:3000/folder/files/${encodeURIComponent(folder)}
@@ -94,6 +94,20 @@ local - http://localhost:3000/folder/files/${encodeURIComponent(folder)}
 
               fileDisplay.appendChild(fileCard);
           });
+
+          // Attach event listeners to all "More Info" buttons
+          document.querySelectorAll(".infoBtn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+            const index = e.target.dataset.index;
+            const file = files[index];
+
+            // Store file data in localStorage
+            localStorage.setItem("selectedFile", JSON.stringify(file));
+
+            // Navigate to details.html
+            window.location.href = "fileDetails.html";
+            });
+        });
       })
       .catch(err => {
           fileDisplay.innerHTML = "<p style=' text-align:center; margin:10px; border-radius:40px; width:250px; background:red ;color:white;'>Error loading files.</p>";

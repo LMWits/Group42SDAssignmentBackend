@@ -1,0 +1,48 @@
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Constitutional Archive</title>
+  <link rel="stylesheet" href="style.css">
+  
+</head>
+<body>
+
+  <header>
+    <section class="header-left">
+      <h1>Constitutional Archive</h1>
+    </section>
+
+    <section class="header-right">
+      <button class="profileButton">User Profile</button>
+    </section>
+  </header>
+
+  <main style="text-align: center; padding: 40px;">
+    <div id="file-info">
+      <h1 id="file-title" style="color: white;">loading...</h1>
+      <p><strong>Description:</strong> <span id="file-description"></span></p>
+      <p><strong>Folder Path:</strong> <span id="file-folder"></span></p>
+      <button onclick="toggleEditForm()">Edit File</button>
+    </div>
+
+    <div id="edit-form" style="display: none; margin-top: 30px;">
+      <h3>Edit File Metadata</h3>
+      <form id="fileForm">
+        <label>Title: <input type="text" id="titleInput" required /></label><br/><br/>
+        <label>Description: <textarea id="descriptionInput" rows="3"></textarea></label><br/><br/>
+        <label>Folder Path: <input type="text" id="folderInput" /></label><br/><br/>
+        <button type="submit">Save Changes</button>
+        <button type="button" onclick="toggleEditForm()">Cancel</button>
+      </form>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <button onclick="deleteFile()" style="color: white; background-color: red; border: none; padding: 10px 20px;">Delete File</button>
+    </div>
+  </main>
+
+  <script src="fileDetails.js"></script>
+</body>
+</html>
