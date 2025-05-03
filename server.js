@@ -193,4 +193,75 @@ app.get('/folders/:folderName', async (req, res) => {
   }
 });
 
+// mongoDB query: finds and GETs file by ID
+app.get('/files/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const file = await filemetas.findById(id);
+    if (!file) return res.status(404).send("File not found");
+    res.json(file);
+  } catch (err) {
+    res.status(500).send("Error fetching file by ID");
+  }
+});
+
+
+//mongoDB query: finds file by ID and UPDATES file title,desc,path
+app.patch('/files/:id', async (req, res) => {
+  const { id } = req.params;
+  const { title, description, path } = req.body;
+
+  try {
+    const updatedFile = await filemetas.findByIdAndUpdate(
+      id,
+      { title, description, path },
+      { new: true } // Return updated document
+    );
+    if (!updatedFile) return res.status(404).send("File not found");
+    res.json(updatedFile);
+  } catch (err) {
+    res.status(500).send("Error updating file");
+  }
+});
+
+
+//mongoDB + AZURE query
+/*
+  1. DELETES the files JSON
+  2. DELETES actual files (blob) from azure
+*/
+console.log("Using container:", process.env.AZURE_CONTAINER_NAME);
+
+const { BlobServiceClient } = require('@azure/storage-blob');
+const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING);
+const containerClient = blobServiceClient.getContainerClient(process.env.AZURE_CONTAINER_NAME);
+
+app.delete('/files/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    //mongoDB delete
+    const deletedFile = await filemetas.findByIdAndDelete(id); 
+    if (!deletedFile) return res.status(404).send("File not found");
+
+    //Azure delete
+    console.log("Deleting file from Azure:", deletedFile.azureBlobName);
+
+    try {
+      const blockBlobClient = containerClient.getBlockBlobClient(deletedFile.azureBlobName);
+      const result = await blockBlobClient.deleteIfExists();
+      console.log("Azure blob deletion result:", result);
+    } catch (azureErr) {
+      console.error("Failed to delete blob from Azure:", azureErr.message);
+    }
+
+    res.send("File deleted (from mongoDB and Azure)");
+  } catch (err) {
+    console.error("Error during file deletion:", err);
+    res.status(500).send("Error deleting file");
+  }
+});
+
+
 module.exports = app;
