@@ -2,10 +2,13 @@
 1. Fetches all top level folders
 Displays them in folderDsiplay <div > found in <main> in adminHP.html
 
-*Change fetch back to https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/folders
+*Replace fetch with:
+remote - https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/folders
+or
+local - http://localhost:3000/folders
 
 */
-fetch("http://localhost:3000/folders")
+fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/folders")
         .then(response => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -37,10 +40,13 @@ fetch("http://localhost:3000/folders")
 2. Fetches all 'filemetas' json files (with out folders)
 Displays them in fileDisplay <div > found in <main> in adminHP.html
 
-*Change fetch back to https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/fileWithNoFolder
+*Replace fetch with:
+remote - https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/fileWithNoFolder
+or
+local - http://localhost:3000/fileWithNoFolder
 
 */
-fetch("http://localhost:3000/fileWithNoFolder")
+fetch("https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/fileWithNoFolder")
         .then(response => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
