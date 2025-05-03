@@ -21,14 +21,8 @@ process.on('uncaughtException', (error) => {
 let server;
 if (process.env.NODE_ENV !== 'test-setup') { // Only start the server if not in test-setup mode
   server = app.listen(port, () => {
-    const addr = server.address();
-    if (addr && addr.port) {
-      console.log(`✅ Server running on port ${addr.port}`);
-    } else {
-      console.error("❌ Server started but address is null");
-    }
+    console.log(`Server running on port ${server.address().port}`);
   });
-  
 
   server.on('error', (error) => {
     console.error('Server error:', error);
