@@ -15,11 +15,11 @@ document.addEventListener("DOMContentLoaded", () => {
   /*
 
 * replace fetch with:
-Remote - https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/folders/${encodeURIComponent(folder)}
+Remote - https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders/${encodeURIComponent(folder)}
 or
 Local - http://localhost:3000/folders/${encodeURIComponent(folder)}
   */
-  fetch(`https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/folders/${encodeURIComponent(folder)}`)
+  fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders/${encodeURIComponent(folder)}`)
       .then(response => {
           if (!response.ok) {
               throw new Error("Network response was not ok");
@@ -58,14 +58,14 @@ Local - http://localhost:3000/folders/${encodeURIComponent(folder)}
 // 2. fetch files in the clicked folder
 /*
 replace fetch with:
-remote - https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/folder/files/${encodeURIComponent(folder)}
+remote - https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folder/files/${encodeURIComponent(folder)}
 or
 local - http://localhost:3000/folder/files/${encodeURIComponent(folder)}
   */
   console.log("Folder being fetched:", folder); //remove
-  console.log("Fetch URL:", `https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/folder/files/${encodeURIComponent(folder)}`); //remove
+  console.log("Fetch URL:", `https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folder/files/${encodeURIComponent(folder)}`); //remove
 
-  fetch(`https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/folder/files/${encodeURIComponent(folder)}`)
+  fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folder/files/${encodeURIComponent(folder)}`)
       .then(res => {
           if (!res.ok) throw new Error(`Server responded with ${res.status}`);
           return res.json();

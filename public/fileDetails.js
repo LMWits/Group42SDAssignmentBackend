@@ -26,10 +26,10 @@ function toggleEditForm() {
 replace fetch with:
 local - http://localhost:3000/files/${fileId}
 or
-remote - https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/files/${fileId}
+remote - https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/files/${fileId}
 */
 function loadFileDetails() {
-  fetch(`https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/files/${fileId}`)
+  fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/files/${fileId}`)
     .then((res) => res.json())
     .then((file) => {
       fileTitle.textContent = file.title;
@@ -53,7 +53,7 @@ function loadFileDetails() {
 replace fetch with:
 local - http://localhost:3000/files/${fileId}
 or
-remote - https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/files/${fileId}
+remote - https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/files/${fileId}
 */
 form.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -66,7 +66,7 @@ form.addEventListener("submit", (e) => {
   };
 
   //update request
-  fetch(`https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/files/${fileId}`, {
+  fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/files/${fileId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(updatedFile),
@@ -87,13 +87,13 @@ form.addEventListener("submit", (e) => {
 replace fetch with:
 local - http://localhost:3000/files/${fileId}
 or
-remote - https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/files/${fileId}
+remote - https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.netfiles/${fileId}
 */
 function deleteFile() {
   if (!confirm("Are you sure you want to delete this file?")) return;
 
   //delete request
-  fetch(`https://group42backend-cxdxgmhrduhye8b3.uksouth-01.azurewebsites.net/files/${fileId}`, {
+  fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/files/${fileId}`, {
     method: "DELETE",
   })
     .then((res) => {
