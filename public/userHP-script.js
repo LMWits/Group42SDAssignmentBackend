@@ -3,12 +3,12 @@
 Displays them in folderDsiplay <div > found in <main> in adminHP.html
 
 *Replace fetch with:
-remote - https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net///folders
+remote - https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders
 or
 local - http://localhost:3000/folders
 
 */
-fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net//folders")
+fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders")
         .then(response => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
