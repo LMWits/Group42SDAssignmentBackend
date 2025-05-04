@@ -3,9 +3,10 @@
 Displays them in folderDsiplay <div > found in <main> in adminHP.html
 
 *Replace fetch with:
-remote - https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net//folders
+remote- https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders  -new link
 or
 local - http://localhost:3000/folders
+
 
 */
 fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders")
@@ -15,33 +16,76 @@ fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fo
           }
           return response.json();
         })
+
         .then(folders => {
-          folderDisplay.innerHTML = `<h2 style="color: white;">All top level folders</h2>`;
+          const folderList = document.createElement("ul");
+          folderList.className = "folderList";
 
-          folders.forEach(folder => {
-            const folderDiv = document.createElement("section"); //create a <div> for each folder
-            folderDiv.textContent = folder; //adds folder name stored in folder as text to <div> created in line above
-            folderDiv.className = "folder";
+          folders.forEach((folder,index) => {
+            const folderItem = document.createElement("li");
+            folderItem.className = "folder-item";
 
-            //store folder name and go to folder.html when <div> clicked on
-            folderDiv.addEventListener("click", () => {
-              localStorage.setItem("currentFolder", folder);
-              window.location.href = "folder.html";
-            });
+            folderItem.innerHTML = `
+              <i class="fas fa-folder"></i>
+              <button>${folder}</button>`;
 
-            folderDisplay.appendChild(folderDiv); //add html of folderDiv to the <div> called fileDisplay
-          });
-        })
-        .catch(error => {
-          folderDisplay.innerHTML = "<p style=' text-align:center; margin:10px; border-radius:40px; width:250px; background:red ;color:white;'>Error loading folders from server.</p>";
+            if (index===0)
+            {
+              folderItem.classList.add('active');
+            }
+
+
+
+      folderItem.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        document.querySelectorAll('.folder-item').forEach(item => {
+          item.classList.remove('active');
+        });
+
+        folderItem.classList.add('active');
+
+        localStorage.setItem("currentFolder", folder);
+        window.location.href = "folder.html";
+      });
+
+      folderList.appendChild(folderItem);
+    });
+
+    const sidebar = document.querySelector(".sidebar") || createSidebar();
+    sidebar.appendChild(folderList);
+  })
+      .catch(error => {
+          const errorMsg = document.createElement("p");
+          errorMsg.style.cssText = "text-align:center; margin:10px; border-radius:40px; width:250px; background:red; color:white;";
+          errorMsg.textContent = "Error loading folders from server.";
+          document.querySelector(".file-manager").appendChild(errorMsg);
           console.error("Fetch error:", error);
         });
+
+function createSidebar() {
+  const sidebar = document.createElement("section");
+  sidebar.className = "sidebar";
+  document.querySelector(".file-manager").appendChild(sidebar);
+  return sidebar;
+}
+
+// Click handler to clear active states when clicking outside folders
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.folder-item')) {
+    document.querySelectorAll('.folder-item').forEach(item => {
+      item.classList.remove('active');
+    });
+  }
+});
+
+
 /*
 2. Fetches all 'filemetas' json files (with out folders)
 Displays them in fileDisplay <div > found in <main> in adminHP.html
 
 *Replace fetch with:
-remote - https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fileWithNoFolder
+remote- https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fileWithNoFolder  -new link
 or
 local - http://localhost:3000/fileWithNoFolder
 
@@ -54,45 +98,50 @@ fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fi
           return response.json();
         })
         .then(files => {
-          fileDisplay.innerHTML = `<h2 style="color: white;" >All Files Without Folders</h2>`; //Clear old results
+          const fileGrid = document.createElement("section");
+          fileGrid.className = "file-grid";
 
           files.forEach((file,i) => {
-            const fileCard = document.createElement("section");
-            fileCard.className = "files";
+            const fileItem = document.createElement("section");
+            fileItem.className = "file-item";
 
-            fileCard.innerHTML = `
-              <strong>Title:</strong> ${file.title}<br>
-              <strong>Description:</strong> ${file.description}<br>
-              <strong>Uploaded:</strong> ${new Date(file.uploadDate).toLocaleDateString()}<br>
-              <!--
-              <strong>Path:</strong> ${file.path?.join(" / ") || "None"}<br><br>
-              <a href="${file.blobUrl}" target="_blank">🔗 View File</a><br><br>
-              -->
-              <button class="infoBtn" data-index="${i}">More Info</button>
+            // Determine icon based on file type
+            let icon = "fa-file";
+            if (file.title) {
+              const ext = file.title.split('.').pop().toLowerCase();
+              if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) icon = "fa-file-image";
+              else if (['mp4', 'mov', 'avi'].includes(ext)) icon = "fa-file-video";
+              else if (['mp3', 'wav'].includes(ext)) icon = "fa-file-audio";
+              else if (['pdf'].includes(ext)) icon = "fa-file-pdf";
+            }
+
+            fileItem.innerHTML = `
+              <section class="file-icon">
+                <i class="fas ${icon}"></i>
+              </section>
+              <section class="file-name">${file.title || 'Untitled'}</section>
+              <section class="file-size">${formatFileSize(file.size)}</section>
             `;
 
-            fileDisplay.appendChild(fileCard); //add html of fileCard to the <div> called fileDisplay
+            // Add click handler for more info
+            fileItem.addEventListener("click", () => {
+              localStorage.setItem("selectedFile", JSON.stringify(file));
+              window.location.href = "fileDetailsAdmin.html";
+            });
+
+            fileGrid.appendChild(fileItem);
           });
 
-          // Attach event listeners to all "More Info" buttons
-            document.querySelectorAll(".infoBtn").forEach(btn => {
-                btn.addEventListener("click", (e) => {
-                const index = e.target.dataset.index;
-                const file = files[index];
-
-                // Store file data in localStorage
-                localStorage.setItem("selectedFile", JSON.stringify(file));
-
-                // Navigate to details.html
-                window.location.href = "fileDetailsAdmin.html";
-                });
-            });
+          // Add file grid to main content
+          document.querySelector(".file-manager").appendChild(fileGrid);
         })
         .catch(error => {
-          fileDisplay.innerHTML = "<p style=' text-align:center; margin:10px; border-radius:40px; width:250px; background:red ;color:white;'>Error loading folders from server.</p>";
+          const errorMsg = document.createElement("p");
+          errorMsg.style.cssText = "text-align:center; margin:10px; border-radius:40px; width:250px; background:red; color:white;";
+          errorMsg.textContent = "Error loading files from server.";
+          document.querySelector(".file-manager").appendChild(errorMsg);
           console.error("Fetch error:", error);
         });
-
 
 /*
 3. Fetches all 'filemetas' json files
@@ -150,3 +199,11 @@ fetch("http://localhost:3000/files")
           console.error("Fetch error:", error);
         });
 */
+
+// Helper function to format file size
+function formatFileSize(bytes) {
+  if (!bytes) return "Unknown size";
+  if (bytes < 1024) return bytes + " B";
+  else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+  else return (bytes / 1048576).toFixed(1) + " MB";
+}

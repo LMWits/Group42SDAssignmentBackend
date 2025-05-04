@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>arcHive (admin)</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
@@ -12,23 +13,32 @@
     <section class="header-left">
       <h1 class="title">Constitutional Archive</h1>
       <!-- <button class="organiseButton">Organise Files</button> -->
-      <button class="createFolderBtn">Create Folder</button>
-      <a href="upload.html">
-        <button class="uploadButton">Upload File</button>
-      </a>
       <input type="text" class="search-input" placeholder="Search files..." id="searchInput" />
       <button class="searchButtonn">Search</button>
     </section>
     <section class="header-right">
       <button class="profileButton">User Profile</button>
     </section>
+    <section class="adminHeader">
+      <a href="https://username.github.io/repo-name/AdminPendingRequests/PendingRequestList.html">
+      <button class="ManageAdminRequest"> Admin Requests</button>
+    </a>
+    </section>
   </header>
 
-  <main>
-    <section id="folderDisplay" ></section>
-    <section id="fileDisplay"></section>
-  </main>
-
+<section class="file-manager">
+  <section class="sidebar">
+    <article class="sidebar-head">
+      <h2>Folders</h2>
+    </article>
+    <article class="sidebar-buttons">
+      <button class="createFolderBtn">Create Folder</button>
+      <a href="upload.html">
+        <button class="uploadButton">Upload File</button>
+      </a>
+    </article>
+  </section>
+</section>
   <script src="adminHP-script.js"></script>
 
 </body>
