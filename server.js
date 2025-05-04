@@ -124,8 +124,19 @@ app.get('/folders', async (req, res) => {
 
     files.forEach(file => {
       if (file.path && file.path.length > 0) {
-        folderSet.add(file.path[0]); //Save the first part of the path (top-level folder)
+        folderSet.add(file.path[0]);
       }
+      
+      // Include top-level folders that are standalone (have no blob)
+      if (
+        (!file.azureBlobName || !file.blobUrl) &&
+        file.path &&
+        file.path.length === 1
+      ) 
+      {
+        folderSet.add(file.path[0]);
+      }
+      
     });
 
     res.json([...folderSet]); //Send unique folder names as an array ('...' converts set to an array)
@@ -176,12 +187,22 @@ app.get('/folders/:folderName', async (req, res) => {
 
     //iterate over the files and extract the folder that comes directly after the 'folderName'
     files.forEach(file => {
-      const folderIndex = file.path.indexOf(folder);  // Find index of 'folder' in the path array
-
-      if (folderIndex !== -1 && folderIndex < file.path.length - 1) {// If the folder exists && the given folder wasnt the last folder in the directory/path then...
-        followingFoldersSet.add(file.path[folderIndex + 1]); //...add the folling folder (in the directory/path) to the set
+      const folderIndex = file.path.indexOf(folder);
+    
+      // Case 1: regular files with subfolders
+      if (folderIndex !== -1 && folderIndex < file.path.length - 1) {
+        followingFoldersSet.add(file.path[folderIndex + 1]);
       }
-    });
+    
+      // Case 2: standalone folder entries (e.g. ["Human Rights", "Court Cases"]) created by user
+      if (
+        (!file.azureBlobName || !file.blobUrl) &&
+        folderIndex !== -1 &&
+        folderIndex < file.path.length - 1
+      ) {
+        followingFoldersSet.add(file.path[folderIndex + 1]);
+      }
+    });    
 
     console.log("All following folders:");
     followingFoldersSet.forEach(followingFolder => console.log(followingFolder));
@@ -203,6 +224,31 @@ app.get('/files/:id', async (req, res) => {
     res.json(file);
   } catch (err) {
     res.status(500).send("Error fetching file by ID");
+  }
+});
+
+//Create folder: path create in mongoDB
+app.post('/createFolder', async (req, res) => {
+  try {
+    const { title, description, path } = req.body;
+
+    // Create an entry with no blob fields since it's a folder
+    const newFolder = new filemetas({
+      title,
+      description,
+      path,
+      azureBlobName: null,
+      blobUrl: null,
+      originalName: null,
+      uploadDate: new Date()
+    });
+
+    await newFolder.save();
+
+    res.json({ message: "Folder created successfully" });
+  } catch (err) {
+    console.error("Error creating folder:", err);
+    res.status(500).json({ message: "Error creating folder", error: err.message });
   }
 });
 

@@ -46,6 +46,7 @@ fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fo
         folderItem.classList.add('active');
 
         localStorage.setItem("currentFolder", folder);
+        localStorage.setItem("currentPath", JSON.stringify([folder])); //Resets our path
         window.location.href = "folder.html";
       });
 
@@ -143,6 +144,25 @@ fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fi
           console.error("Fetch error:", error);
         });
 
+       //make sure path is empty if we click on createFolder from the HP
+       document.addEventListener("DOMContentLoaded", function () {
+        const createFolderBtn = document.getElementById("createFolderBtn");
+        
+        if (createFolderBtn) {
+          createFolderBtn.addEventListener("click", function () {
+            console.log("Create Folder button clicked"); // Debugging log
+            localStorage.removeItem("currentFolder");
+            localStorage.removeItem("currentPath");
+            console.log("localStorage cleared"); // Debugging log
+            setTimeout(() => {
+              window.location.href = "createFolder.html"; // Ensure redirection happens after clearing
+            }, 500); // Delay for a brief moment to ensure localStorage is cleared before redirect
+          });
+        } else {
+          console.error("Create Folder button not found.");
+        }
+      });
+              
 /*
 3. Fetches all 'filemetas' json files
 Displays them in fileDisplay <div > found in <main> in adminHP.html

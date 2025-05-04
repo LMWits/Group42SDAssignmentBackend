@@ -1,4 +1,5 @@
 
+require("dotenv").config(); 
 const app = require('./server');
 const multer = require('multer');
 const { BlobServiceClient } = require('@azure/storage-blob');
@@ -16,6 +17,7 @@ const FileMeta = mongoose.model('FileMeta', new mongoose.Schema({
 }));
 
 // Multer
+//more stprage: const upload = multer({ storage: multer.memoryStorage(),limits: { fileSize: 50 * 1024 * 1024 } // Allow files up to 50MB});
 const upload = multer({ storage: multer.memoryStorage() });
 
 //Azure connect
@@ -26,19 +28,28 @@ const containerClient = blobServiceClient.getContainerClient(process.env.AZURE_C
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
     const file = req.file;
-    const { title, description, Uploadpath } = req.body;
-
     if (!file) return res.status(400).json({ message: 'No file uploaded.' });
+
+    console.log('File received:', file);
+
+    const { title, description, Uploadpath } = req.body;
+    console.log('Form data received:', { title, description, Uploadpath });
 
     const blobName = Date.now() + '-' + file.originalname;
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-    await blockBlobClient.uploadData(file.buffer);
+    try {
+      await blockBlobClient.uploadData(file.buffer); // This uploads the file buffer to Azure Blob Storage
+    } catch (uploadErr) {
+      console.error('❌ Azure upload error:', uploadErr);
+      return res.status(500).json({ message: 'Azure upload failed.', error: uploadErr.message }); // If an error occurs during upload, respond with an error
+    }
+    
     const blobUrl = blockBlobClient.url;
 
-    const safePath = Uploadpath?.replace(/(\.\.|\\)/g, '');//Some data validation
+    const safePath = Uploadpath?.replace(/(\.\.|\\)/g, ''); // Some data validation
     const FinalPath = safePath.split("/").map(p => p.trim()).filter(p => p);
 
-    const meta = new FileMeta({//what we send
+    const meta = new FileMeta({
       title,
       description,
       path: FinalPath,
@@ -48,10 +59,10 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     });
 
     await meta.save();
-
     res.json({ message: '✅ File uploaded successfully.', url: blobUrl });
   } catch (err) {
     console.error('❌ Upload error:', err);
     res.status(500).json({ message: 'Server error during upload.' });
+    res.status(500).json({ message: 'Server error during upload.', error: err.message });
   }
 });

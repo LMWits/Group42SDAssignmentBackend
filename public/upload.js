@@ -1,19 +1,30 @@
-// Add an onclick function to a button with an ID "uploadButton"
-document.getElementById("submit").onclick = function () {
-    alert("Upload button clicked!");
-};
-
-// Existing code for handling form submission
-document.getElementById("uploadForm").addEventListener("submit", async function (e) {
+document.getElementById("file").addEventListener("change", function () {
+    const fileName = this.files[0]?.name || "No file chosen";
+    document.getElementById("fileNameDisplay").textContent = fileName;
+  });
+  
+  document.getElementById("uploadForm").addEventListener("submit", async function (e) {
     e.preventDefault();
   
-    const data = new FormData(this);
+    const form = e.target;
+    const formData = new FormData(form);
   
-    const response = await fetch('/api/upload', {
+    try {
+      const response = await fetch('/api/upload', {
         method: 'POST',
-        body: data
-    });
+        body: formData
+      });
   
-    const ans = await response.json();
-    document.getElementById("status").innerText = ans.message;
-});
+      const result = await response.json();
+  
+      if (response.ok) {
+        document.getElementById("status").innerText = result.message;
+      } else {
+        document.getElementById("status").innerText = `❌ ${result.message}`;
+      }
+    } catch (err) {
+      console.error("Error during file upload:", err);
+      document.getElementById("status").innerText = "❌ Upload failed. Please try again.";
+    }
+  });
+  

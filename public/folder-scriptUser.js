@@ -35,18 +35,14 @@ document.addEventListener("DOMContentLoaded", () => {
             // Dynamically append folder display
             folderDisplay.innerHTML = `<h2 style="color: white; >All subfolders in ${folder}</h2>`;
   
-            folders.forEach(subfolder => {
-              const folderDiv = document.createElement("section");
-              folderDiv.textContent = subfolder;
-              folderDiv.className = "folder";
-      
-              folderDiv.addEventListener("click", () => {
-                const currentPath = JSON.parse(localStorage.getItem("currentPath")) || [];
-                const newPath = [...currentPath, subfolder];
-      
-                localStorage.setItem("currentFolder", subfolder);
-                localStorage.setItem("currentPath", JSON.stringify(newPath));
-                window.location.href = "folder.html";
+            folders.forEach(folder => {
+                const folderDiv = document.createElement("section");
+                folderDiv.textContent = folder;
+                folderDiv.className = "folder";
+  
+                folderDiv.addEventListener("click", () => {
+                    localStorage.setItem("currentFolder", folder);
+                    window.location.href = "folderUser.html";
                 });
   
                 folderDisplay.appendChild(folderDiv);

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Create Folder</title>
+     <link rel="stylesheet" href="upload-style.css">
+</head>
+<header> 
+    <h1>Create New Folder</h1>
+</header>
+<body>
+    <form id="createFolderForm" enctype="multipart/form-data">
+      
+        <label for="folderTitle">Folder Title:</label>
+        <input type="text" id="folderTitle" name="folderTitle" required /><br/><br/>
+      
+        <label for="folderDescription">Description:</label>
+        <textarea id="folderDescription" name="folderDescription" required></textarea><br/><br/>
+
+        <button type="submit">Create Folder</button>
+    </form>
+  
+    <p id="status"></p>
+
+    <script src="folderCreation.js"></script>
+  
+</body>
+</html> 
