@@ -29,21 +29,10 @@ fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fo
               <i class="fas fa-folder"></i>
               <button>${folder}</button>`;
 
-            if (index===0)
-            {
-              folderItem.classList.add('active');
-            }
-
 
 
       folderItem.addEventListener("click", (e) => {
         e.stopPropagation();
-
-        document.querySelectorAll('.folder-item').forEach(item => {
-          item.classList.remove('active');
-        });
-
-        folderItem.classList.add('active');
 
         localStorage.setItem("currentFolder", folder);
         localStorage.setItem("currentPath", JSON.stringify([folder])); //Resets our path
@@ -70,15 +59,6 @@ function createSidebar() {
   document.querySelector(".file-manager").appendChild(sidebar);
   return sidebar;
 }
-
-// Click handler to clear active states when clicking outside folders
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.folder-item')) {
-    document.querySelectorAll('.folder-item').forEach(item => {
-      item.classList.remove('active');
-    });
-  }
-});
 
 
 /*
@@ -147,7 +127,7 @@ fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fi
        //make sure path is empty if we click on createFolder from the HP
        document.addEventListener("DOMContentLoaded", function () {
         const createFolderBtn = document.getElementById("createFolderBtn");
-        
+
         if (createFolderBtn) {
           createFolderBtn.addEventListener("click", function () {
             console.log("Create Folder button clicked"); // Debugging log
@@ -162,7 +142,7 @@ fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fi
           console.error("Create Folder button not found.");
         }
       });
-              
+
 /*
 3. Fetches all 'filemetas' json files
 Displays them in fileDisplay <div > found in <main> in adminHP.html
