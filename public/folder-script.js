@@ -1,19 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
     const folder = localStorage.getItem("currentFolder");
-  
+
     if (!folder) {
         folderName.textContent = "No folder selected.";
         return;
     } else {
         folderName.textContent = `${folder}`;
     }
-  
+
     // Clear folderDisplay to prevent old folders from showing after reload
     folderDisplay.innerHTML = "";
-  
+
     // 1. Fetch all top level folders in the current folder
     /*
-  
+
   * replace fetch with:
   Remote - https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders/${encodeURIComponent(folder)}
   or
@@ -28,37 +28,37 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .then(folders => {
             if (folders.length === 0) {
-                folderDisplay.innerHTML = `<p style="color: white; >No subfolders found in this folder.</p>`;
+                folderDisplay.innerHTML = `<p style="color: white;">No subfolders found in this folder.</p>`;
                 return;
             }
-  
+
             // Dynamically append folder display
-            folderDisplay.innerHTML = `<h2 style="color: white; >All subfolders in ${folder}</h2>`;
-  
+            folderDisplay.innerHTML = `<h2 style="color: white;" >All subfolders in ${folder}</h2>`;
+
             folders.forEach(subfolder => {
               const folderDiv = document.createElement("section");
               folderDiv.textContent = subfolder;
               folderDiv.className = "folder";
-      
+
               folderDiv.addEventListener("click", () => {
                 const currentPath = JSON.parse(localStorage.getItem("currentPath")) || [];
                 const newPath = [...currentPath, subfolder];
-      
+
                 localStorage.setItem("currentFolder", subfolder);
                 localStorage.setItem("currentPath", JSON.stringify(newPath));
                 window.location.href = "folder.html";
                 });
-  
+
                 folderDisplay.appendChild(folderDiv);
             });
-  
+
         })
         .catch(error => {
             folderDisplay.innerHTML = "<p style=' text-align:center; margin:10px; border-radius:40px; width:250px; background:red ;color:white;'>Error loading files from server.</p>";
             console.error("Fetch error:", error);
         });
-  
-  
+
+
   // 2. fetch files in the clicked folder
   /*
   replace fetch with:
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
     */
     console.log("Folder being fetched:", folder); //remove
     console.log("Fetch URL:", `https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folder/files/${encodeURIComponent(folder)}`); //remove
-  
+
     fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folder/files/${encodeURIComponent(folder)}`)
         .then(res => {
             if (!res.ok) throw new Error(`Server responded with ${res.status}`);
@@ -76,18 +76,18 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .then(files => {
             console.log("Files fetched:", files); //remove
-  
+
             if (files.length === 0) {
-                fileDisplay.innerHTML = `<p style="color: white; >No files in this folder.</p>`;
+                fileDisplay.innerHTML = `<p style="color: white;">No files in this folder.</p>`;
                 return;
             }
-  
-            fileDisplay.innerHTML = `<h2 style="color: white; >Files</h2>`;
-  
+
+            fileDisplay.innerHTML = `<h2 style="color: white;">Files</h2>`;
+
             files.forEach((file, i) => {
                 const fileCard = document.createElement("section");
                 fileCard.className = "files";
-  
+
                 fileCard.innerHTML = `
                     <strong>Title:</strong> ${file.title}<br>
                     <strong>Description:</strong> ${file.description}<br>
@@ -95,19 +95,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     <strong>Path:</strong> ${file.path?.join(" / ") || "None"}<br><br>
                     <button class="infoBtn" data-index="${i}">More Info</button>
                 `;
-  
+
                 fileDisplay.appendChild(fileCard);
             });
-  
+
             // Attach event listeners to all "More Info" buttons
             document.querySelectorAll(".infoBtn").forEach(btn => {
               btn.addEventListener("click", (e) => {
               const index = e.target.dataset.index;
               const file = files[index];
-  
+
               // Store file data in localStorage
               localStorage.setItem("selectedFile", JSON.stringify(file));
-  
+
               // Navigate to details.html
               window.location.href = "fileDetails.html";
               });
@@ -117,6 +117,5 @@ document.addEventListener("DOMContentLoaded", () => {
             fileDisplay.innerHTML = "<p style=' text-align:center; margin:10px; border-radius:40px; width:250px; background:red ;color:white;'>Error loading files.</p>";
             console.error(err);
         });
-  
+
   });
-  
