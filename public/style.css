@@ -318,3 +318,98 @@ html, body {
 .files:hover {
     border-color: rgba(255, 255, 255, 0.6);
 }
+
+/* File Details */
+.file-details-container {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.file-name {
+    font-size: 24px;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.file-description, .file-folder {
+    color: rgba(255, 255, 255, 0.8);
+    display: block;
+    margin: 10px 0;
+}
+
+.edit-button, .delete-button {
+    cursor: pointer;
+    color: black;
+    border-radius: 40px;
+    background: #ffff01;
+    border: none;
+    padding: 10px 20px;
+    font-weight: 600;
+    margin: 10px 5px;
+    font-size: medium;
+    transition: all 0.2s;
+}
+
+.edit-button:hover, .delete-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.delete-button {
+    background-color: #ff4444;
+    color: white;
+}
+
+.edit-form {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    padding: 20px;
+    margin: 20px 0;
+    color: white;
+}
+
+.file-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-input, .form-textarea {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: white;
+    width: 100%;
+    max-width: 400px;
+}
+
+.form-textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.form-button {
+    cursor: pointer;
+    color: black;
+    border-radius: 40px;
+    background: #ffff01;
+    border: none;
+    padding: 8px 16px;
+    font-weight: 600;
+    margin: 5px;
+}
+
+.cancel-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.delete-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
