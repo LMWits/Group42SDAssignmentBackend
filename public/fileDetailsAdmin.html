@@ -1,46 +1,50 @@
-
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Constitutional Archive</title>
   <link rel="stylesheet" href="style.css">
-  
 </head>
 <body>
-
   <header>
     <section class="header-left">
       <h1>Constitutional Archive</h1>
     </section>
-
     <section class="header-right">
       <button class="profileButton">User Profile</button>
     </section>
   </header>
 
-  <main style="text-align: center; padding: 40px;">
-    <div id="file-info">
-      <h1 id="file-title" style="color: white;">loading...</h1>
-      <p><strong>Description:</strong> <span id="file-description"></span></p>
-      <p><strong>Folder Path:</strong> <span id="file-folder"></span></p>
-      <button onclick="toggleEditForm()">Edit File</button>
-    </div>
+  <main class="file-details-container">
+    <article class="sidebar">
+      <header class="sidebar-head">
+        <h2>File Details</h2>
+      </header>
+      
+      <section class="files">
+        <article id="file-info">
+          <h1 id="file-title" class="file-name">loading...</h1>
+          <p><strong>Description:</strong> <em id="file-description" class="file-description"></em></p>
+          <p><strong>Folder Path:</strong> <em id="file-folder" class="file-folder"></em></p>
+          <button onclick="toggleEditForm()" class="edit-button">Edit File</button>
+        </article>
 
-    <div id="edit-form" style="display: none; margin-top: 30px;">
-      <h3>Edit File Metadata</h3>
-      <form id="fileForm">
-        <label>Title: <input type="text" id="titleInput" required /></label><br/><br/>
-        <label>Description: <textarea id="descriptionInput" rows="3"></textarea></label><br/><br/>
-        <label>Folder Path: <input type="text" id="folderInput" /></label><br/><br/>
-        <button type="submit">Save Changes</button>
-        <button type="button" onclick="toggleEditForm()">Cancel</button>
-      </form>
-    </div>
+        <section id="edit-form" style="display: none; margin-top: 30px;" class="edit-form">
+          <h3>Edit File Metadata</h3>
+          <form id="fileForm" class="file-form">
+            <label>Title: <input type="text" id="titleInput" required class="form-input"/></label><br/><br/>
+            <label>Description: <textarea id="descriptionInput" rows="3" class="form-textarea"></textarea></label><br/><br/>
+            <label>Folder Path: <input type="text" id="folderInput" class="form-input"/></label><br/><br/>
+            <button type="submit" class="form-button">Save Changes</button>
+            <button type="button" onclick="toggleEditForm()" class="form-button cancel-button">Cancel</button>
+          </form>
+        </section>
 
-    <div style="margin-top: 40px;">
-      <button onclick="deleteFile()" style="color: white; background-color: red; border: none; padding: 10px 20px;">Delete File</button>
-    </div>
+        <footer class="delete-section">
+          <button onclick="deleteFile()" class="delete-button">Delete File</button>
+        </footer>
+      </section>
+    </article>
   </main>
 
   <script src="fileDetails.js"></script>
