@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
               localStorage.setItem("selectedFile", JSON.stringify(file));
   
               // Navigate to details.html
-              window.location.href = "fileDetails.html";
+              window.location.href = "fileDetailsUser.html";
               });
           });
         })
