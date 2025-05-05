@@ -278,3 +278,43 @@ html, body {
     font-size: 0.8rem;
     color: white;
 }
+
+/* Folder sections */
+.folder {
+    padding: 8px 15px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-radius: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    margin: 5px;
+    white-space: nowrap;
+}
+
+.folder:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.folder.active {
+    background-color: #ffff01;
+    color: black;
+}
+
+/* Files sections */
+.files {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 6px;
+    padding: 15px;
+    margin: 10px 0;
+    color: white;
+    width: 100%;
+    max-width: 600px;
+}
+
+.files:hover {
+    border-color: rgba(255, 255, 255, 0.6);
+}
