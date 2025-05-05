@@ -11,7 +11,9 @@
 
   <header>
     <section class="header-left">
+      <a href="adminHP.html">
       <h1 class="title">Constitutional Archive</h1>
+      </a>
       <!-- <button class="organiseButton">Organise Files</button> -->
       <input type="text" class="search-input" placeholder="Search files..." id="searchInput" />
       <button class="searchButtonn">Search</button>
@@ -20,9 +22,7 @@
       <button class="profileButton">User Profile</button>
     </section>
     <section class="adminHeader">
-      <a href="https://username.github.io/repo-name/AdminPendingRequests/PendingRequestList.html">
-      <button class="ManageAdminRequest"> Admin Requests</button>
-    </a>
+      <button class="ManageAdminRequest" id="rewuestAdminBtn"> Admin Requests</button>
     </section>
   </header>
 
@@ -44,6 +44,11 @@
   </section>
 </section>
   <script src="adminHP-script.js"></script>
+  <script>
+    document.getElementById("requestAdminBtn").onclick = function () {
+        window.location.href = "https://LMWits.github.io/Group42SDAssignment/AdminPendingRequests/PendingRequestList.html";
+    };
+</script>
 
 </body>
 </html>
