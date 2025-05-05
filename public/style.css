@@ -413,3 +413,26 @@ html, body {
     padding-top: 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+.back-button {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: auto;
+    background: rgba(255, 255, 255, 0.8);
+    color: #0b1d3a;
+    border: none;
+    padding: 10px 16px;
+    font-size: 16px;
+    border-radius: 8px; 
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s;
+    z-index: 1000;
+}
+
+.back-button:hover {
+    background: #ffff01;
+}
+
