@@ -309,5 +309,30 @@ app.delete('/files/:id', async (req, res) => {
   }
 });
 
+//Runs searchRouter.js 
+// which has MongoDB query: finds file searched for
+app.get('/search', async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) return res.status(400).json({ message: "Query required" });
+
+  try {
+    const regex = new RegExp(query, 'i'); // case-insensitive partial match
+    const results = await filemetas.find({
+      $or: [
+        { title: regex },
+        { description: regex },
+        { path: regex }
+      ]
+    });
+
+    res.json(results);
+  } catch (err) {
+    console.error("Search error:", err);
+    res.status(500).send("Error searching files");
+  }
+});
+
+
 
 module.exports = app;

@@ -6,10 +6,8 @@ Displays them in folderDsiplay <div > found in <main> in adminHP.html
 remote- https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders  -new link
 or
 local - http://localhost:3000/folders
-
-
 */
-fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders")
+fetch(`http://localhost:3000/folders`)
         .then(response => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -71,7 +69,7 @@ or
 local - http://localhost:3000/fileWithNoFolder
 
 */
-fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fileWithNoFolder")
+fetch(`http://localhost:3000/fileWithNoFolder`)
         .then(response => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -143,8 +141,82 @@ fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fi
         }
       });
 
+
 /*
-3. Fetches all 'filemetas' json files
+3. Fetches files as they are being typed into the search bar
+
+*Replace fetch with:
+remote- https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/search?query=${encodeURIComponent(query)}  -new link
+or
+local - http://localhost:3000/search?query=${encodeURIComponent(query)}
+*/
+
+const searchInput = document.getElementById("searchInput");
+const searchButton = document.querySelector(".searchButton");
+
+// Option a: trigger search as you type
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value.trim();
+  if (query.length > 1) performSearch(query);
+});
+
+// Option b: full search when button clicked
+searchButton.addEventListener("click", () => {
+  const query = searchInput.value.trim();
+  if (query) performSearch(query);
+});
+
+function performSearch(query) {
+  fetch(`http://localhost:3000/search?query=${encodeURIComponent(query)}`)
+    .then(res => res.json())
+    .then(results => {
+
+      const fileGrid = document.createElement("section");
+      fileGrid.className = "file-grid";
+      fileGrid.innerHTML = ""; // clear old results
+
+      results.forEach((file, i) => {
+        const fileItem = document.createElement("section");
+        fileItem.className = "file-item";
+
+        const icon = getFileIcon(file.title);
+        fileItem.innerHTML = `
+          <section class="file-icon">
+            <i class="fas ${icon}"></i>
+          </section>
+          <section class="file-name">${file.title || 'Untitled'}</section>
+          <section class="file-size">${formatFileSize(file.size)}</section>
+        `;
+
+        fileItem.addEventListener("click", () => {
+          localStorage.setItem("selectedFile", JSON.stringify(file));
+          window.location.href = "fileDetailsAdmin.html";
+        });
+
+        fileGrid.appendChild(fileItem);
+      });
+
+      const displayArea = document.querySelector(".file-manager");
+      displayArea.innerHTML = ""; // clear everything for now
+      displayArea.appendChild(fileGrid);
+    })
+    .catch(err => {
+      console.error("Search failed:", err);
+    });
+}
+
+function getFileIcon(title = "") {
+  const ext = title.split('.').pop().toLowerCase();
+  if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) return "fa-file-image";
+  if (['mp4', 'mov', 'avi'].includes(ext)) return "fa-file-video";
+  if (['mp3', 'wav'].includes(ext)) return "fa-file-audio";
+  if (['pdf'].includes(ext)) return "fa-file-pdf";
+  return "fa-file";
+}
+
+
+/*
+4. Fetches all 'filemetas' json files
 Displays them in fileDisplay <div > found in <main> in adminHP.html
 */
 /*
@@ -207,3 +279,5 @@ function formatFileSize(bytes) {
   else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
   else return (bytes / 1048576).toFixed(1) + " MB";
 }
+
+
