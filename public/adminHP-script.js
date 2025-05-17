@@ -6,10 +6,8 @@ Displays them in folderDsiplay <div > found in <main> in adminHP.html
 remote- https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders  -new link
 or
 local - http://localhost:3000/folders
-
-
 */
-fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders")
+fetch(`http://localhost:3000/folders`)
         .then(response => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -71,7 +69,7 @@ or
 local - http://localhost:3000/fileWithNoFolder
 
 */
-fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fileWithNoFolder")
+fetch(`http://localhost:3000/fileWithNoFolder`)
         .then(response => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -88,8 +86,8 @@ fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fi
 
             // Determine icon based on file type
             let icon = "fa-file";
-            if (file.title) {
-              const ext = file.title.split('.').pop().toLowerCase();
+            if (file.originalName) {
+              const ext = file.originalName.split('.').pop().toLowerCase();
               if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) icon = "fa-file-image";
               else if (['mp4', 'mov', 'avi'].includes(ext)) icon = "fa-file-video";
               else if (['mp3', 'wav'].includes(ext)) icon = "fa-file-audio";
@@ -101,7 +99,8 @@ fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fi
                 <i class="fas ${icon}"></i>
               </section>
               <section class="file-name">${file.title || 'Untitled'}</section>
-              <section class="file-size">${formatFileSize(file.size)}</section>
+              <section class="file-desc">${file.description}</section>
+              <section class="file-year">${formatDate(file.uploadDate)}</section>
             `;
 
             // Add click handler for more info
@@ -143,8 +142,110 @@ fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fi
         }
       });
 
+
 /*
-3. Fetches all 'filemetas' json files
+3. Fetches files as they are being typed into the search bar
+
+*Replace fetch with:
+remote- https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/search?query=${encodeURIComponent(query)}  -new link
+or
+local - http://localhost:3000/search?query=${encodeURIComponent(query)}
+*/
+
+const searchInput = document.getElementById("searchInput");
+const searchButton = document.querySelector(".searchButton");
+
+// Option a: trigger search as you type
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value.trim();
+  if (query.length > 1) performSearch(query);
+});
+
+// Option b: full search when button clicked
+searchButton.addEventListener("click", () => {
+  const query = searchInput.value.trim();
+  if (query) performSearch(query);
+});
+
+function performSearch(query) {
+  fetch(`http://localhost:3000/search?query=${encodeURIComponent(query)}`)
+    .then(res => res.json())
+    .then(results => {
+
+      const queryWords = query.toLowerCase().split(/\s+/); //for highlighting
+
+
+      const fileGrid = document.createElement("section");
+      fileGrid.className = "file-grid";
+      fileGrid.innerHTML = ""; // clear old results
+
+      results.forEach((file, i) => {
+        const fileItem = document.createElement("section");
+        fileItem.className = "file-item";
+
+        const icon = getFileIcon(file.originalName);
+        fileItem.innerHTML = `
+          <section class="file-icon">
+            <i class="fas ${icon}"></i>
+          </section>
+          <section class="file-name">${highlightMatches(file.title || 'Untitled', queryWords)}</section>
+          <section class="file-desc">${highlightMatches(file.description || 'No description', queryWords)}</section>
+          <section class="file-date">${highlightMatches(formatDate(file.uploadDate) || 'No Date', queryWords)}</section>
+        `;
+
+        fileItem.addEventListener("click", () => {
+          localStorage.setItem("selectedFile", JSON.stringify(file));
+          window.location.href = "fileDetailsAdmin.html";
+        });
+
+        fileGrid.appendChild(fileItem);
+      });
+
+      const displayArea = document.querySelector(".file-manager");
+      displayArea.innerHTML = ""; // clear everything for now
+      displayArea.appendChild(fileGrid);
+    })
+    .catch(err => {
+      console.error("Search failed:", err);
+    });
+}
+
+function getFileIcon(originalName = "") {
+  const ext = originalName.split('.').pop().toLowerCase();
+  if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) return "fa-file-image";
+  if (['mp4', 'mov', 'avi'].includes(ext)) return "fa-file-video";
+  if (['mp3', 'wav'].includes(ext)) return "fa-file-audio";
+  if (['pdf'].includes(ext)) return "fa-file-pdf";
+  return "fa-file";
+}
+
+//high lights characters
+function highlightMatches(text, words) {
+  if (!text) return '';
+  let highlighted = text;
+
+  words.forEach(word => {
+    const regex = new RegExp(`(${word})`, 'ig');
+    highlighted = highlighted.replace(regex, '<mark>$1</mark>');
+  });
+
+  return highlighted;
+}
+
+function formatDate(isoDate) {
+  const date = new Date(isoDate);
+  return date.toLocaleDateString('en-UK', {
+    year: 'numeric',
+    day: 'numeric',
+    month: 'short',
+  });
+}
+
+
+
+
+/*
+4. Fetches all 'filemetas' json files
 Displays them in fileDisplay <div > found in <main> in adminHP.html
 */
 /*
@@ -200,10 +301,3 @@ fetch("http://localhost:3000/files")
         });
 */
 
-// Helper function to format file size
-function formatFileSize(bytes) {
-  if (!bytes) return "Unknown size";
-  if (bytes < 1024) return bytes + " B";
-  else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
-  else return (bytes / 1048576).toFixed(1) + " MB";
-}
