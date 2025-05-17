@@ -1,5 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
     const folder = localStorage.getItem("currentFolder");
+    let currentPath = JSON.parse(localStorage.getItem("currentPath")) || [];
+
+    if (currentPath.length === 0 && folder) {
+        currentPath = [folder];
+        localStorage.setItem("currentPath", JSON.stringify(currentPath));
+    }
 
     if (!folder) {
         folderName.textContent = "No folder selected.";
