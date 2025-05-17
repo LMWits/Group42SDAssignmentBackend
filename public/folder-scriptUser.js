@@ -41,9 +41,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 folderDiv.className = "folder";
   
                 folderDiv.addEventListener("click", () => {
+                    const currentPath = JSON.parse(localStorage.getItem("currentPath")) || [];
+                    const newPath = [...currentPath, folder];
+                
                     localStorage.setItem("currentFolder", folder);
+                    localStorage.setItem("currentPath", JSON.stringify(newPath));
                     window.location.href = "folderUser.html";
-                });
+                });                
   
                 folderDisplay.appendChild(folderDiv);
             });
