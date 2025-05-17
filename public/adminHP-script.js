@@ -179,18 +179,50 @@ function performSearch(query) {
       fileGrid.className = "file-grid";
       fileGrid.innerHTML = ""; // clear old results
 
+      console.log(results); //remove
+
       results.forEach((file, i) => {
+
+        console.log(file);//remove
+
         const fileItem = document.createElement("section");
         fileItem.className = "file-item";
 
         const icon = getFileIcon(file.originalName);
+
+        //try highlighting, fallback to plain text if no matches
+        let title = file.title || 'Untitled';
+        let description = file.description || 'No description';
+        let date = formatDate(file.uploadDate) || 'No Date';
+        let path = file.path || 'No path';
+
+        const highlightedTitle = highlightMatches(title, queryWords);
+        const highlightedDesc = highlightMatches(description, queryWords);
+        const highlightedDate = highlightMatches(date, queryWords);
+        const highlightedPath = highlightMatches(path.join("/"), queryWords);
+
+        if(highlightedTitle.includes('<mark>')){
+          title = highlightedTitle
+        }
+        if(highlightedDesc.includes('<mark>')){
+          description = highlightedDesc
+        }
+        if(highlightedDate.includes('<mark>')){
+          date = highlightedDate
+        }
+        if(highlightedPath.includes('<mark>')){
+          path = highlightedPath
+        }
+
+
         fileItem.innerHTML = `
           <section class="file-icon">
             <i class="fas ${icon}"></i>
           </section>
-          <section class="file-name">${highlightMatches(file.title || 'Untitled', queryWords)}</section>
-          <section class="file-desc">${highlightMatches(file.description || 'No description', queryWords)}</section>
-          <section class="file-date">${highlightMatches(formatDate(file.uploadDate) || 'No Date', queryWords)}</section>
+          <section class="file-name">${title}</section>
+          <section class="file-desc">${description}</section>
+          <section class="file-date">${date}</section>
+          <section class="file-path">${path}</section>
         `;
 
         fileItem.addEventListener("click", () => {
@@ -211,6 +243,7 @@ function performSearch(query) {
 }
 
 function getFileIcon(originalName = "") {
+  if (!originalName || typeof originalName !== "string") return "fa-file";
   const ext = originalName.split('.').pop().toLowerCase();
   if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) return "fa-file-image";
   if (['mp4', 'mov', 'avi'].includes(ext)) return "fa-file-video";
@@ -232,6 +265,7 @@ function highlightMatches(text, words) {
   return highlighted;
 }
 
+//formats date
 function formatDate(isoDate) {
   const date = new Date(isoDate);
   return date.toLocaleDateString('en-UK', {

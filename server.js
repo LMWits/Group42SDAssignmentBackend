@@ -7,6 +7,7 @@ const app = express();
 app.use(express.static('public'));
 const port = process.env.NODE_ENV === 'test' ? 0 : (process.env.PORT || 3000);
 const fs = require('fs');
+const axios = require("axios"); //for multi-language search
 
 app.use(cors()); //allow CORS from any origin
 app.use(express.json()); //parse JSON bodies
@@ -315,8 +316,8 @@ app.get('/search', async (req, res) => {
 
   if (!query) return res.status(400).json({ message: "Query required" });
 
-  
-  const { keywords, type, year } = parseQuery(query); //uses helper funtion parseQuery()
+  const translatedQuery = await translateToEnglish(query);
+  const { keywords, type, year } = parseQuery(translatedQuery); //uses helper funtion parseQuery()
   const keywordRegexes = keywords.split(/\s+/).map(word => new RegExp(word, 'i'));// case-insensitive partial match on each word in keywords
 
   // and conditions: return documents where at least one of the words in keywords is in title, description, or a path folder
@@ -443,5 +444,24 @@ function parseQuery(rawQuery) {
   };
 }
 
+
+//Multi language search function
+async function translateToEnglish(text) {
+  try {
+    const response = await axios.post('https://libretranslate.com/translate', {
+      q: text,
+      source: 'auto',
+      target: 'en',
+      format: 'text'
+    }, {
+      headers: { 'accept': 'application/json' }
+    });
+
+    return response.data.translatedText;
+  } catch (err) {
+    console.error("Translation failed:", err.message);
+    return text; // fallback to original if translation fails
+  }
+}
 
 module.exports = app;
