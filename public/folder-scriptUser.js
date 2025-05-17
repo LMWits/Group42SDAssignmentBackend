@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .then(folders => {
             if (folders.length === 0) {
-                folderDisplay.innerHTML = `<p style="color: white; >No subfolders found in this folder.</p>`;
+                folderDisplay.innerHTML = `<p style="color: white;>No subfolders found in this folder.</p>`;
                 return;
             }
   
@@ -100,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <strong>Uploaded:</strong> ${new Date(file.uploadDate).toLocaleDateString()}<br>
                     <strong>Path:</strong> ${file.path?.join(" / ") || "None"}<br><br>
                     <button class="infoBtn" data-index="${i}">More Info</button>
+                    <button class="downloadBtn" data-url="${file.blobUrl}">Download</button>
                 `;
   
                 fileDisplay.appendChild(fileCard);
@@ -118,6 +119,34 @@ document.addEventListener("DOMContentLoaded", () => {
               window.location.href = "fileDetailsUser.html";
               });
           });
+
+          //Download file when button clicekd and open in new window
+          document.querySelectorAll(".downloadBtn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+              const url = e.target.dataset.url;
+          
+              // Check if the URL is valid before trying to open it
+              fetch(url, { method: 'HEAD' })
+                .then(res => {
+                  if (!res.ok) throw new Error("Invalid file URL or file not found.");
+          
+                  // Open in new tab
+                  window.open(url, '_blank');
+          
+                  // Trigger download
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = ""; // Let browser use original filename
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                })
+                .catch(err => {
+                  alert("Failed to download file. The link may be invalid or expired.");
+                });
+            });
+          });
+          
         })
         .catch(err => {
             fileDisplay.innerHTML = "<p style=' text-align:center; margin:10px; border-radius:40px; width:250px; background:red ;color:white;'>Error loading files.</p>";
