@@ -86,8 +86,8 @@ fetch(`http://localhost:3000/fileWithNoFolder`)
 
             // Determine icon based on file type
             let icon = "fa-file";
-            if (file.title) {
-              const ext = file.title.split('.').pop().toLowerCase();
+            if (file.originalName) {
+              const ext = file.originalName.split('.').pop().toLowerCase();
               if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) icon = "fa-file-image";
               else if (['mp4', 'mov', 'avi'].includes(ext)) icon = "fa-file-video";
               else if (['mp3', 'wav'].includes(ext)) icon = "fa-file-audio";
@@ -99,7 +99,8 @@ fetch(`http://localhost:3000/fileWithNoFolder`)
                 <i class="fas ${icon}"></i>
               </section>
               <section class="file-name">${file.title || 'Untitled'}</section>
-              <section class="file-size">${formatFileSize(file.size)}</section>
+              <section class="file-desc">${file.description}</section>
+              <section class="file-year">${formatDate(file.uploadDate)}</section>
             `;
 
             // Add click handler for more info
@@ -171,6 +172,9 @@ function performSearch(query) {
     .then(res => res.json())
     .then(results => {
 
+      const queryWords = query.toLowerCase().split(/\s+/); //for highlighting
+
+
       const fileGrid = document.createElement("section");
       fileGrid.className = "file-grid";
       fileGrid.innerHTML = ""; // clear old results
@@ -179,13 +183,14 @@ function performSearch(query) {
         const fileItem = document.createElement("section");
         fileItem.className = "file-item";
 
-        const icon = getFileIcon(file.title);
+        const icon = getFileIcon(file.originalName);
         fileItem.innerHTML = `
           <section class="file-icon">
             <i class="fas ${icon}"></i>
           </section>
-          <section class="file-name">${file.title || 'Untitled'}</section>
-          <section class="file-size">${formatFileSize(file.size)}</section>
+          <section class="file-name">${highlightMatches(file.title || 'Untitled', queryWords)}</section>
+          <section class="file-desc">${highlightMatches(file.description || 'No description', queryWords)}</section>
+          <section class="file-date">${highlightMatches(formatDate(file.uploadDate) || 'No Date', queryWords)}</section>
         `;
 
         fileItem.addEventListener("click", () => {
@@ -205,14 +210,38 @@ function performSearch(query) {
     });
 }
 
-function getFileIcon(title = "") {
-  const ext = title.split('.').pop().toLowerCase();
+function getFileIcon(originalName = "") {
+  const ext = originalName.split('.').pop().toLowerCase();
   if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) return "fa-file-image";
   if (['mp4', 'mov', 'avi'].includes(ext)) return "fa-file-video";
   if (['mp3', 'wav'].includes(ext)) return "fa-file-audio";
   if (['pdf'].includes(ext)) return "fa-file-pdf";
   return "fa-file";
 }
+
+//high lights characters
+function highlightMatches(text, words) {
+  if (!text) return '';
+  let highlighted = text;
+
+  words.forEach(word => {
+    const regex = new RegExp(`(${word})`, 'ig');
+    highlighted = highlighted.replace(regex, '<mark>$1</mark>');
+  });
+
+  return highlighted;
+}
+
+function formatDate(isoDate) {
+  const date = new Date(isoDate);
+  return date.toLocaleDateString('en-UK', {
+    year: 'numeric',
+    day: 'numeric',
+    month: 'short',
+  });
+}
+
+
 
 
 /*
@@ -271,13 +300,4 @@ fetch("http://localhost:3000/files")
           console.error("Fetch error:", error);
         });
 */
-
-// Helper function to format file size
-function formatFileSize(bytes) {
-  if (!bytes) return "Unknown size";
-  if (bytes < 1024) return bytes + " B";
-  else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
-  else return (bytes / 1048576).toFixed(1) + " MB";
-}
-
 

@@ -309,30 +309,139 @@ app.delete('/files/:id', async (req, res) => {
   }
 });
 
-//Runs searchRouter.js 
-// which has MongoDB query: finds file searched for
+//MongoDB query: finds file searched for
 app.get('/search', async (req, res) => {
   const { query } = req.query;
 
   if (!query) return res.status(400).json({ message: "Query required" });
 
+  
+  const { keywords, type, year } = parseQuery(query); //uses helper funtion parseQuery()
+  const keywordRegexes = keywords.split(/\s+/).map(word => new RegExp(word, 'i'));// case-insensitive partial match on each word in keywords
+
+  // and conditions: return documents where at least one of the words in keywords is in title, description, or a path folder
+  const andConditions = keywordRegexes.map(regex => ({
+    $or: [
+      { title: regex },
+      { description: regex },
+      { path: regex }
+    ]
+  }));
+
+  //file type filter
+  if (type) {
+
+    const typeExtensions = {
+    pdf: /\.(pdf)$/i,
+    image: /\.(jpg|jpeg|png|gif)$/i,
+    audio: /\.(mp3|wav)$/i,
+    video: /\.(mp4|mov|avi)$/i
+    };
+
+    andConditions.push({ originalName: { $regex: typeExtensions[type] }}); //add 'originalName:type' to andConditions using typeExtensions and parseQuery()
+  }
+
+  //try mongoDB query "find" then sort
   try {
-    const regex = new RegExp(query, 'i'); // case-insensitive partial match
-    const results = await filemetas.find({
-      $or: [
-        { title: regex },
-        { description: regex },
-        { path: regex }
-      ]
+    console.log("AND conditions:", andConditions); //remove
+
+    const files = await filemetas.find({ $and: andConditions });
+
+    //rank results based on score system
+    const scored = files.map(file => {
+      let score = 0;
+
+      //Loops through each individual keyword (as a regex) and Adds points per keyword match per field
+      console.log("keywords length:" + keywords.length)
+
+      if(keywords.length > 0 || type){
+        for (const regex of keywordRegexes) {
+          if (file.title?.match(regex)) score += 5; //title match = 5
+          if (file.description?.match(regex)) score += 2; //description match = 2
+          if (file.path?.some(folder => folder.match(regex))) score += 1; //path match = 1
+        }
+      }
+      
+      //if year is in search, bring up score (not redundent because: year was removed as keyword so it wont be in keywordRegexes for loop above)
+      const yearStr = year?.toString();
+      if (yearStr) {
+        if (file.title?.includes(yearStr)) score += 5;
+        if (file.description?.includes(yearStr)) score += 2;
+        if (file.path?.some(folder => folder.includes(yearStr))) score += 1;
+      }
+
+      //if searched year is in upload date, bring up score
+      if (year && new Date(file.uploadDate).getFullYear() == year) {
+        score += 2; //upload date = 2
+      }
+
+      return { file, score };
     });
 
-    res.json(results);
-  } catch (err) {
+    //filter out files with score=0
+    const filtered = scored.filter(f => f.score > 0);
+
+    //Sort by score descending
+    filtered.sort((a, b) => b.score - a.score);
+
+    console.log("FILES FOUND:", filtered);//remove
+
+    //Return just the file data, sorted
+    res.json(filtered.map(f => f.file));
+
+  }catch (err) {
     console.error("Search error:", err);
     res.status(500).send("Error searching files");
   }
 });
 
+
+
+//Helper funtion to remove stop words in search query, allows for NLP
+const stopWords = new Set([
+  "the", "is", "in", "at", "of", "on", "for", "from", "a", "an", "to", "with", "by", "about", "show", "me", "uploaded"
+]);
+
+const typeKeywords = {
+  pdf: ["pdf", "document", "file"],
+  image: ["image", "photo", "jpg", "png", "jpeg", "picture"],
+  audio: ["audio", "sound", "mp3", "wav", "song", "music"],
+  video: ["video", "mp4", "mov","movie"]
+};
+
+function parseQuery(rawQuery) {
+  if (!rawQuery) return { keywords: "", type: null, year: null};
+
+  
+  const words = rawQuery.toLowerCase().split(/\s+/); //convert to lowercase and split into words
+  let cleanedWords = words.filter(word => !stopWords.has(word)); //filter out stop words
+  
+  let type = null;
+  let year = null;
+
+  //Look for typeKeywords in cleanedWords to detect type
+  for (const [key, aliases] of Object.entries(typeKeywords)) {
+    if (aliases.some(alias => cleanedWords.includes(alias))) {
+      type = key;
+      cleanedWords = cleanedWords.filter(word => !aliases.includes(word)); //remove type word from keywords
+      break;
+    }
+  }
+
+  //Look for year in cleanedWords to detect year
+  const yearMatch = rawQuery.match(/\b(19|20)\d{2}\b/);
+
+  if (yearMatch) {
+    year = parseInt(yearMatch[0]);
+    cleanedWords = cleanedWords.filter(word => word !== yearMatch[0]); //remove year from keywords
+  }
+
+  return {
+    keywords: cleanedWords.join(" "),
+    type,
+    year
+  };
+}
 
 
 module.exports = app;
