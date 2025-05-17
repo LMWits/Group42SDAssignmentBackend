@@ -113,6 +113,26 @@ document.addEventListener("DOMContentLoaded", () => {
             fileDisplay.innerHTML = "<p style=' text-align:center; margin:10px; border-radius:40px; width:250px; background:red ;color:white;'>Error loading files.</p>";
             console.error(err);
         });
+
+        //Back button funtionality for current path
+        document.getElementById("backBtn").addEventListener("click", () => {
+            const currentPath = JSON.parse(localStorage.getItem("currentPath")) || [];
+    
+            currentPath.pop();
+    
+            const newCurrentFolder = currentPath.length > 0 ? currentPath[currentPath.length - 1] : null;
+    
+            if (newCurrentFolder) {
+                localStorage.setItem("currentFolder", newCurrentFolder);
+                localStorage.setItem("currentPath", JSON.stringify(currentPath));
+                window.location.href = "folderUser.html";
+            } else {
+                localStorage.removeItem("currentFolder");
+                localStorage.removeItem("currentPath");
+                window.location.href = "userHP.html";
+            }
+        });
+
   
   });
   

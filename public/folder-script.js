@@ -118,4 +118,23 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error(err);
         });
 
+        //Back button funtionality for current path
+        document.getElementById("backBtn").addEventListener("click", () => {
+            const currentPath = JSON.parse(localStorage.getItem("currentPath")) || [];
+    
+            currentPath.pop();
+    
+            const newCurrentFolder = currentPath.length > 0 ? currentPath[currentPath.length - 1] : null;
+    
+            if (newCurrentFolder) {
+                localStorage.setItem("currentFolder", newCurrentFolder);
+                localStorage.setItem("currentPath", JSON.stringify(currentPath));
+                window.location.href = "folder.html";
+            } else {
+                localStorage.removeItem("currentFolder");
+                localStorage.removeItem("currentPath");
+                window.location.href = "adminHP.html";
+            }
+        });
+
   });
