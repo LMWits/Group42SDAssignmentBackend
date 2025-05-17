@@ -126,24 +126,18 @@ document.addEventListener("DOMContentLoaded", () => {
               const url = e.target.dataset.url;
           
               // Check if the URL is valid before trying to open it
-              fetch(url, { method: 'HEAD' })
-                .then(res => {
-                  if (!res.ok) throw new Error("Invalid file URL or file not found.");
-          
-                  // Open in new tab
-                  window.open(url, '_blank');
-          
-                  // Trigger download
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = ""; // Let browser use original filename
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
-                })
-                .catch(err => {
-                  alert("Failed to download file. The link may be invalid or expired.");
-                });
+              try {
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = ""; // optional, allows browser to infer filename
+                a.target = "_blank"; // open in new tab if desired
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              } catch (err) {
+                alert("Download failed.");
+              }              
+
             });
           });
           
