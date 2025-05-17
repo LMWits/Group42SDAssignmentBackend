@@ -26,7 +26,7 @@ fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fo
             //store folder name and go to folder.html when <div> clicked on
             folderDiv.addEventListener("click", () => {
               localStorage.setItem("currentFolder", folder);
-              window.location.href = "folder.html";
+              window.location.href = "folderUser.html";
             });
 
             folderDisplay.appendChild(folderDiv); //add html of folderDiv to the <div> called fileDisplay
