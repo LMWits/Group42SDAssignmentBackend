@@ -448,19 +448,26 @@ function parseQuery(rawQuery) {
 //Multi language search function
 async function translateToEnglish(text) {
   try {
-    const response = await axios.post('https://libretranslate.com/translate', {
-      q: text,
-      source: 'auto',
-      target: 'en',
-      format: 'text'
+    const response = await axios.post('https://google-translate113.p.rapidapi.com/api/v1/translator/text', {
+      text,
+      to: 'en',
+      from: 'auto'
     }, {
-      headers: { 'accept': 'application/json' }
+      headers: {
+        'content-type': 'application/json',
+        'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+        'X-RapidAPI-Host': 'google-translate113.p.rapidapi.com'
+      }
     });
 
-    return response.data.translatedText;
-  } catch (err) {
-    console.error("Translation failed:", err.message);
-    return text; // fallback to original if translation fails
+    //console.log("Full API response:", response.data); //remove
+    const translated = response.data.trans;
+    console.log(`🔤 Translated "${text}" → "${translated}"`); //remove
+
+    return translated;
+  } catch (error) {
+    console.error("Translation failed:", error.response?.data || error.message);
+    return text;
   }
 }
 
