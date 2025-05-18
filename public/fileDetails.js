@@ -30,7 +30,7 @@ function loadFileDetails() {
     .then((file) => {
       fileTitle.textContent = file.title;
       fileDescription.textContent = file.description || "(none)";
-      
+
       if (file.path && file.path.length !== 0) {
         fileFolder.textContent = file.path.join(" / ");
       } else {
@@ -81,10 +81,14 @@ if (form) {
         return res.json();
       })
       .then(() => {
+        alert("File updated successfully.")
         toggleEditForm();
         loadFileDetails();
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+        alert("Failed to update file.Please try again");
+      });
   });
 }
 
@@ -99,18 +103,20 @@ remote - https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.netf
 // Function to delete file (admin only)
 function deleteFile() {
   if (!confirm("Are you sure you want to delete this file?")) return;
-  
+
   //delete request
   fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/files/${fileId}`, {
     method: "DELETE",
   })
     .then((res) => {
       if (!res.ok) throw new Error("Failed to delete file.");
+      alert("File deleted successfully.")
       window.location.href = "adminHP.html";
     })
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      console.error(err);
+      alert("Failed to delete the file. Please try again");
+    });
 }
 
 loadFileDetails();
-
-
