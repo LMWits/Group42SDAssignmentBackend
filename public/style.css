@@ -191,6 +191,11 @@ html, body {
     transition: background-color 0.2s;
     border-radius: 40px;
     background: rgba(255, 255, 255, 0.1);
+    margin-right: 10px;
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .folder-item button
@@ -207,6 +212,9 @@ html, body {
     text-align: center;
     padding: 0 10px;
     margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .folder-item:hover {
@@ -224,7 +232,7 @@ html, body {
 }
 
 .folder-item i {
-    margin-right: 10px;
+    margin-right: 0;
     font-size: 1rem;
 }
 
@@ -234,11 +242,12 @@ html, body {
   flex-wrap: nowrap;
   overflow-x: auto;
   gap: 15px;
-  padding: 10px 0;
+  padding: 10px 0px;
   width: 100%;
 }
 
 .file-item {
+    /* Your existing styles */
     flex: 0 0 auto;
     width: 150px;
     min-width: 150px;
@@ -248,16 +257,33 @@ html, body {
     border-radius: 6px;
     padding: 15px;
     text-align: center;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.3s ease; /* Smooth transition for hover */
     cursor: pointer;
     color: white;
-
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
 }
 
+
 .file-item:hover {
-    border-color: rgba(255, 255, 255, 0.6);
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 10;
+    white-space: normal;
+    overflow: visible;
+    min-width: 250px;
+    width: auto;
+    backdrop-filter: blur(20px);
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    transform: scale(1.05);
+}
+
+.file-item:hover strong {
+    display: block;
+    word-break: break-word;
 }
 
 .file-icon {
@@ -281,7 +307,7 @@ html, body {
 
 /* Folder sections */
 .folder {
-    padding: 8px 15px;
+    padding: 8px 20px;
     display: inline-flex;
     align-items: center;
     cursor: pointer;
@@ -424,7 +450,7 @@ html, body {
     border: none;
     padding: 10px 16px;
     font-size: 16px;
-    border-radius: 8px; 
+    border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
     text-decoration: none;
@@ -435,4 +461,3 @@ html, body {
 .back-button:hover {
     background: #ffff01;
 }
-
