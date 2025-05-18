@@ -1,16 +1,31 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require("mongoose");
-require("dotenv").config(); //configuration used for .env files
-
+require("dotenv").config();
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
+const cookieParser = require('cookie-parser');
 const app = express();
-app.use(express.static('public'));
 const port = process.env.NODE_ENV === 'test' ? 0 : (process.env.PORT || 3000);
 const fs = require('fs');
-const axios = require("axios"); //for multi-language search
+const axios = require("axios");
+const jwt = require('jsonwebtoken');
+const path = require('path');
 
-app.use(cors()); //allow CORS from any origin
-app.use(express.json()); //parse JSON bodies
+app.use(cors({
+  origin: function(origin, callback) {
+    // const allowed = ["http://localhost:8080", "http://127.0.0.1:8080"];
+    const allowed = ["http://localhost:8080", "http://127.0.0.1:8080", "https://gentle-tree-06c29d803.6.azurestaticapps.net"];
+    
+    if (!origin || allowed.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
+app.use(express.json());
+app.use(cookieParser());
 
 process.on('uncaughtException', (error) => {
   console.error('Uncaught Exception:', error);
@@ -79,9 +94,7 @@ Use this model to save and fetch file data in MongoDB.”
 */
 const filemetas = mongoose.model("filemetas", fileSchema);
 
-
-//MongoDB query: fetches all 'files' json info
-app.get('/files', async (req, res) => {
+app.get('/files', requireAuth, async (req, res) => {
   try {
     const files = await filemetas.find({});
     res.json(files); // Send back JSON
@@ -99,8 +112,62 @@ app.get('/ping', async (req, res) => {
   }
 });
 
-//MongoDB query: fetches files json info (files that are without paths/not in folder)
-app.get('/fileWithNoFolder', async (req, res) => {
+function requireAuth(req, res, next) {
+  let token = null;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies && req.cookies.token) {
+    token = req.cookies.token;
+  } else if (req.query && req.query.token) {
+    token = req.query.token;
+  } else if (req.headers['x-access-token']) {
+    token = req.headers['x-access-token'];
+  }
+  if (!token) {
+    return res.status(401).send('Unauthorized: No token provided');
+  }
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).send('Unauthorized: Invalid token');
+  }
+}
+
+app.post('/authorize', (req, res) => {
+  const { userId, email, role } = req.body;
+  if (!userId || !email || !role) {
+    return res.status(400).json({ error: 'Missing userId, email, or role' });
+  }
+  const token = jwt.sign({ userId, email, role }, JWT_SECRET, { expiresIn: '2h' });
+  if (res.cookie) {
+    res.cookie('token', token, { httpOnly: true, sameSite: 'lax' });
+  }
+  res.json({ token });
+});
+
+app.get('/adminHP.html', requireAuth, (req, res, next) => {
+  console.log('[AdminHP] Authenticated user:', req.user);
+  res.sendFile(path.join(__dirname, 'public', 'adminHP.html'));
+});
+
+app.use((req, res, next) => {
+  if (req.path === '/authorize' || req.path === '/ping') {
+    return next();
+  }
+  requireAuth(req, res, () => {
+    const filePath = path.join(__dirname, 'public', req.path);
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        return next();
+      }
+      res.sendFile(filePath);
+    });
+  });
+});
+
+app.get('/fileWithNoFolder', requireAuth, async (req, res) => {
   try {
     const files = await filemetas.find({});
     const fileWithNoFolder = new Set();
@@ -117,8 +184,7 @@ app.get('/fileWithNoFolder', async (req, res) => {
   }
 });
 
-//MongoDB query: fetches all unique 'folders' in json array
-app.get('/folders', async (req, res) => {
+app.get('/folders', requireAuth, async (req, res) => {
   try {
     const files = await filemetas.find({}); //Get all files from MongoDB
     const folderSet = new Set();
@@ -146,8 +212,7 @@ app.get('/folders', async (req, res) => {
   }
 });
 
-//MongoDB query: fetches all 'files' in parsed folder
-app.get('/folder/files/:folderName', async (req, res) => {
+app.get('/folder/files/:folderName', requireAuth, async (req, res) => {
   try {
     const folder = req.params.folderName;
 
@@ -175,8 +240,7 @@ app.get('/folder/files/:folderName', async (req, res) => {
   }
 });
 
-//MongoDB query: fetches all folders (in specified) in json array
-app.get('/folders/:folderName', async (req, res) => {
+app.get('/folders/:folderName', requireAuth, async (req, res) => {
   try {
     const folder = req.params.folderName;
     const followingFoldersSet = new Set(); //set to hold folder that comes after given 'folderName' in the path of each file
@@ -215,8 +279,7 @@ app.get('/folders/:folderName', async (req, res) => {
   }
 });
 
-// mongoDB query: finds and GETs file by ID
-app.get('/files/:id', async (req, res) => {
+app.get('/files/:id', requireAuth, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -228,8 +291,7 @@ app.get('/files/:id', async (req, res) => {
   }
 });
 
-//Create folder: path create in mongoDB
-app.post('/createFolder', async (req, res) => {
+app.post('/createFolder', requireAuth, async (req, res) => {
   try {
     const { title, description, path } = req.body;
 
@@ -253,9 +315,7 @@ app.post('/createFolder', async (req, res) => {
   }
 });
 
-
-//mongoDB query: finds file by ID and UPDATES file title,desc,path
-app.patch('/files/:id', async (req, res) => {
+app.patch('/files/:id', requireAuth, async (req, res) => {
   const { id } = req.params;
   const { title, description, path } = req.body;
 
@@ -284,7 +344,7 @@ const { BlobServiceClient } = require('@azure/storage-blob');
 const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING);
 const containerClient = blobServiceClient.getContainerClient(process.env.AZURE_CONTAINER_NAME);
 
-app.delete('/files/:id', async (req, res) => {
+app.delete('/files/:id', requireAuth, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -310,8 +370,7 @@ app.delete('/files/:id', async (req, res) => {
   }
 });
 
-//MongoDB query: finds file searched for
-app.get('/search', async (req, res) => {
+app.get('/search', requireAuth, async (req, res) => {
   const { query } = req.query;
 
   if (!query) return res.status(400).json({ message: "Query required" });
