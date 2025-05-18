@@ -38,9 +38,11 @@ if (currentFolder && currentPath.length > 0)
       if (response.ok) {
         document.getElementById("status").innerText = "✅ Folder created successfully!";
         alert("Folder created successfully.");
+        window.location.href = "adminHP.html"; // check if this is fine to go back to home page
       } else {
         document.getElementById("status").innerText = "❌ Error: " + result.message;
         alert("Failed to create folder. Please try again");
+        window.location.href = "adminHP.html";
       }
     } catch (err) {
       console.error(err);

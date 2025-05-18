@@ -81,13 +81,15 @@ if (form) {
         return res.json();
       })
       .then(() => {
-        alert("File updated successfully.")
+        alert("File updated successfully.");
+        window.location.href = "adminHP.html";
         toggleEditForm();
         loadFileDetails();
       })
       .catch((err) => {
         console.error(err);
         alert("Failed to update file.Please try again");
+        window.location.href = "adminHP.html";
       });
   });
 }
