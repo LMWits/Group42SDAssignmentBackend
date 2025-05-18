@@ -4,6 +4,7 @@ const chaiHttp = require('chai-http');
 const dbHandler = require('../helpers/db-handler');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const jwt = require('jsonwebtoken');
 
 // Load test environment variables
 require('../helpers/test-env');
@@ -17,6 +18,7 @@ describe('Additional API Endpoints', function() {
   
   let app;
   let FileMeta;
+  const token = jwt.sign({ userId: 'testuser', email: 'test@example.com', role: 'admin' }, process.env.JWT_SECRET);
   
   before(async () => {
     // Connect to the in-memory database before importing the app
@@ -70,11 +72,10 @@ describe('Additional API Endpoints', function() {
         description: 'Test description',
         path: ['TestFolder'] 
       };
-      
       const newFile = await FileMeta.create(fileData);
-      
-      const res = await chai.request(app).get(`/files/${newFile._id}`);
-      
+      const res = await chai.request(app)
+        .get(`/files/${newFile._id}`)
+        .set('Authorization', `Bearer ${token}`);
       expect(res).to.have.status(200);
       expect(res.body).to.be.an('object');
       expect(res.body.title).to.equal(fileData.title);
@@ -83,14 +84,16 @@ describe('Additional API Endpoints', function() {
 
     it('should return 404 for non-existent file ID', async () => {
       const nonExistentId = new mongoose.Types.ObjectId();
-      const res = await chai.request(app).get(`/files/${nonExistentId}`);
-      
+      const res = await chai.request(app)
+        .get(`/files/${nonExistentId}`)
+        .set('Authorization', `Bearer ${token}`);
       expect(res).to.have.status(404);
     });
 
     it('should handle invalid ObjectId format', async () => {
-      const res = await chai.request(app).get('/files/invalid-id');
-      
+      const res = await chai.request(app)
+        .get('/files/invalid-id')
+        .set('Authorization', `Bearer ${token}`);
       expect(res).to.have.status(500);
     });
   });
@@ -105,6 +108,7 @@ describe('Additional API Endpoints', function() {
       
       const res = await chai.request(app)
         .post('/createFolder')
+        .set('Authorization', `Bearer ${token}`)
         .send(folderData);
       
       expect(res).to.have.status(200);
@@ -140,6 +144,7 @@ describe('Additional API Endpoints', function() {
       
       const res = await chai.request(app)
         .patch(`/files/${newFile._id}`)
+        .set('Authorization', `Bearer ${token}`)
         .send(updateData);
       
       expect(res).to.have.status(200);
@@ -160,6 +165,7 @@ describe('Additional API Endpoints', function() {
       
       const res = await chai.request(app)
         .patch(`/files/${nonExistentId}`)
+        .set('Authorization', `Bearer ${token}`)
         .send({ title: 'New Title' });
       
       expect(res).to.have.status(404);
@@ -182,7 +188,8 @@ describe('Additional API Endpoints', function() {
         }
       ]);
 
-      const res = await chai.request(app).get('/files');
+      const res = await chai.request(app).get('/files')
+        .set('Authorization', `Bearer ${token}`);
       
       expect(res).to.have.status(200);
       expect(res.body).to.be.an('array');
@@ -198,7 +205,8 @@ describe('Additional API Endpoints', function() {
         throw new Error('Mock database error');
       };
 
-      const res = await chai.request(app).get('/files');
+      const res = await chai.request(app).get('/files')
+        .set('Authorization', `Bearer ${token}`);
       
       expect(res).to.have.status(500);
       

@@ -4,6 +4,7 @@ const chaiHttp = require('chai-http');
 const dbHandler = require('../helpers/db-handler');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const jwt = require('jsonwebtoken');
 
 // Load test environment variables
 require('../helpers/test-env');
@@ -17,6 +18,7 @@ describe('Folder API Routes', function() {
   
   let app;
   let FileMeta;
+  const token = jwt.sign({ userId: 'testuser', email: 'test@example.com', role: 'admin' }, process.env.JWT_SECRET);
   
   before(async () => {
     // Connect to the in-memory database before importing the app
@@ -65,7 +67,8 @@ describe('Folder API Routes', function() {
         path: ['Folder2'] 
       });
 
-      const res = await chai.request(app).get('/folders');
+      const res = await chai.request(app).get('/folders')
+        .set('Authorization', `Bearer ${token}`);
       
       expect(res).to.have.status(200);
       expect(res.body).to.be.an('array');
@@ -103,7 +106,9 @@ describe('Folder API Routes', function() {
       });
 
       // Test for files in the 'Contracts' folder
-      const res = await chai.request(app).get('/folder/files/Contracts');
+      const res = await chai.request(app)
+        .get(`/folder/files/${encodeURIComponent('Contracts')}`)
+        .set('Authorization', `Bearer ${token}`);
       
       expect(res).to.have.status(200);
       expect(res.body).to.be.an('array');
@@ -112,7 +117,9 @@ describe('Folder API Routes', function() {
     });
 
     it('should return an empty array for non-existent folder', async () => {
-      const res = await chai.request(app).get('/folder/files/NonExistentFolder');
+      const res = await chai.request(app)
+        .get(`/folder/files/NonExistentFolder`)
+        .set('Authorization', `Bearer ${token}`);
       
       expect(res).to.have.status(200);
       expect(res.body).to.be.an('array');
@@ -136,7 +143,9 @@ describe('Folder API Routes', function() {
         path: ['Parent', 'Child3'] 
       });
 
-      const res = await chai.request(app).get('/folders/Parent');
+      const res = await chai.request(app)
+        .get(`/folders/Parent`)
+        .set('Authorization', `Bearer ${token}`);
       
       expect(res).to.have.status(200);
       expect(res.body).to.be.an('array');
@@ -162,7 +171,9 @@ describe('Folder API Routes', function() {
         path: [] 
       });
 
-      const res = await chai.request(app).get('/fileWithNoFolder');
+      const res = await chai.request(app)
+        .get('/fileWithNoFolder')
+        .set('Authorization', `Bearer ${token}`);
       
       expect(res).to.have.status(200);
       expect(res.body).to.be.an('array');
