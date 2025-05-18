@@ -9,7 +9,8 @@ body {
 header {
     text-align: center;
     padding: 1.5rem;
-    background-color: rgba(0, 0, 50, 0.5);
+    background-color: rgba(0, 0, 8, 0.2);
+    backdrop-filter: blur(10px);
     color: white;
     font-size: 1.5rem;
 }
@@ -93,7 +94,7 @@ button:hover {
     border: none;
     padding: 10px 16px;
     font-size: 16px;
-    border-radius: 8px;
+    border-radius: 16px;
     font-weight: normal;
     cursor: pointer;
     text-decoration: none;

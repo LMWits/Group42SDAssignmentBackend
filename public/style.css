@@ -461,3 +461,22 @@ html, body {
 .back-button:hover {
     background: #ffff01;
 }
+
+.infoBtn,
+.downloadBtn {
+  border: none;
+  padding: 10px 15px;
+  border-radius: 20px;
+  background-color: #fff;
+  color: #0b1d3a;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-right: 10px; 
+}
+
+.infoBtn:hover,
+.downloadBtn:hover {
+  background-color: #ffff01; 
+}
+
