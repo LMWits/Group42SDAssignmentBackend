@@ -1,21 +1,3 @@
-import { auth, db } from './firebaseAuth.js';
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-auth.onAuthStateChanged(async (user) => {
-  if (user) {
-    const userDocRef = doc(db, "users", user.uid);
-    const userDocSnap = await getDoc(userDocRef);
-
-    if (userDocSnap.exists()) {
-      const userData = userDocSnap.data();
-
-      // Only show the Account Details button if not a pending_admin
-      if (userData.role !== "pending_admin") {
-        document.getElementById("accountDetailsSection").style.display = "block";
-      }
-    }
-  }
-});
 /*
 1. Fetches all top level folders
 Displays them in folderDsiplay <div > found in <main> in adminHP.html
