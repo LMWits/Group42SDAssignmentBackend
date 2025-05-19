@@ -174,6 +174,7 @@ app.use((req, res, next) => {
   if (
     req.path === '/authorize' ||
     req.path === '/ping' ||
+    req.path === '/debug-cookies' ||
     publicExtensions.includes(ext)
   ) {
     // Serve static file without auth
