@@ -164,9 +164,25 @@ app.get('/adminHP.html', requireAuth, (req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  if (req.path === '/authorize' || req.path === '/ping') {
-    return next();
+  // Allow unauthenticated access to static assets (css, js, images, favicon, etc.)
+  const publicExtensions = ['.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.woff', '.woff2', '.ttf', '.eot', '.map'];
+  const ext = path.extname(req.path);
+  if (
+    req.path === '/authorize' ||
+    req.path === '/ping' ||
+    publicExtensions.includes(ext)
+  ) {
+    // Serve static file without auth
+    const filePath = path.join(__dirname, 'public', req.path);
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        return next();
+      }
+      res.sendFile(filePath);
+    });
+    return;
   }
+  // For all other routes, require authentication
   requireAuth(req, res, () => {
     const filePath = path.join(__dirname, 'public', req.path);
     fs.access(filePath, fs.constants.F_OK, (err) => {
