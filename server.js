@@ -156,8 +156,7 @@ app.post('/authorize', (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       sameSite: 'none',
-      secure: true,
-      domain: '.azurewebsites.net' // Set to your backend's parent domain
+      secure: true
     });
   }
   res.json({ token });
