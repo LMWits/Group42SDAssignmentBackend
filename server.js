@@ -152,7 +152,8 @@ app.post('/authorize', (req, res) => {
   }
   const token = jwt.sign({ userId, email, role }, JWT_SECRET, { expiresIn: '2h' });
   if (res.cookie) {
-    res.cookie('token', token, { httpOnly: true, sameSite: 'lax' });
+    // Set cookie for cross-site usage (SameSite=None, Secure)
+    res.cookie('token', token, { httpOnly: true, sameSite: 'none', secure: true });
   }
   res.json({ token });
 });
