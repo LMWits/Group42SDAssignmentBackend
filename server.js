@@ -113,15 +113,25 @@ app.get('/ping', async (req, res) => {
 });
 
 function requireAuth(req, res, next) {
+  // Debug logging for token extraction
+  console.log('--- requireAuth Debug ---');
+  console.log('Headers:', req.headers);
+  console.log('Cookies:', req.cookies);
+  console.log('Query:', req.query);
+
   let token = null;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
     token = req.headers.authorization.split(' ')[1];
+    console.log('Token found in Authorization header:', token);
   } else if (req.cookies && req.cookies.token) {
     token = req.cookies.token;
+    console.log('Token found in cookies:', token);
   } else if (req.query && req.query.token) {
     token = req.query.token;
+    console.log('Token found in query:', token);
   } else if (req.headers['x-access-token']) {
     token = req.headers['x-access-token'];
+    console.log('Token found in x-access-token header:', token);
   }
   if (!token) {
     return res.status(401).send('Unauthorized: No token provided');
