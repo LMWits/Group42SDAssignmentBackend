@@ -16,8 +16,17 @@ document.getElementById("file").addEventListener("change", function () {
         credentials: 'include'
       });
 
-      const result = await response.json();
+      let result;
+      try {
+        result = await response.json();
+      } catch (jsonErr) {
+        const text = await response.text();
+        console.error('Non-JSON response:', text);
+        document.getElementById("status").innerText = "❌ Server did not return JSON. Check console for details.";
+        return;
+      }
 
+        
       if (response.ok) {
         document.getElementById("status").innerText = result.message;
         alert("File uploaded successfully.");
