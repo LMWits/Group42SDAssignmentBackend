@@ -152,26 +152,13 @@ or
 local - http://localhost:3000/search?query=${encodeURIComponent(query)}
 */
 
-let originalFolders = null;
-
-// Store folders when page loaded
-document.addEventListener('DOMContentLoaded', () => {
-  originalFolders = document.querySelector(".file-manager").innerHTML;
-});
-
 const searchInput = document.getElementById("searchInput");
 const searchButton = document.querySelector(".searchButton");
 
 // Option a: trigger search as you type
 searchInput.addEventListener("input", () => {
   const query = searchInput.value.trim();
-  if (query.length > 1)
-  {performSearch(query);
-  }
-  else
-  {
-    restoreOriginalFolders();
-  }
+  if (query.length > 1) performSearch(query);
 });
 
 // Option b: full search when button clicked
@@ -179,22 +166,6 @@ searchButton.addEventListener("click", () => {
   const query = searchInput.value.trim();
   if (query) performSearch(query);
 });
-
-searchButton.addEventListener("click",() =>
-{
-  searchInput.value="";
-  restoreOriginalFolders();
-  searchInput.focus();
-});
-
-function restoreOriginalFolders()
-{
-  if (originalFolders)
-  {
-    const displayArea = document.querySelector(".file-manager");
-    displayArea.innerHTML=originalFolders;
-  }
-}
 
 function performSearch(query) {
   fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/search?query=${encodeURIComponent(query)}`)
@@ -363,3 +334,4 @@ fetch("http://localhost:3000/files")
           console.error("Fetch error:", error);
         });
 */
+

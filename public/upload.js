@@ -19,12 +19,10 @@ document.getElementById("file").addEventListener("change", function () {
 
       if (response.ok) {
         document.getElementById("status").innerText = result.message;
-        alert("File uploaded successfully.");
-        window.location.href = "adminHP.html";
+        alert("File uploaded successfully.")
       } else {
         document.getElementById("status").innerText = `❌ ${result.message}`;
         alert("File couldn't upload. Please try again.")
-        window.location.href = "adminHP.html";
       }
     } catch (err) {
       console.error("Error during file upload:", err);
