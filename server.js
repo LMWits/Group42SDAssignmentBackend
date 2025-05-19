@@ -561,4 +561,9 @@ async function translateToEnglish(text) {
   }
 }
 
+
+app.get('/debug-cookies', (req, res) => {
+  res.json({ cookies: req.cookies, headers: req.headers });
+});
+
 module.exports = app;
