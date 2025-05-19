@@ -323,6 +323,7 @@ app.get('/files/:id', requireAuth, async (req, res) => {
   }
 });
 
+//Create folder
 app.post('/createFolder', requireAuth, async (req, res) => {
   try {
     const { title, description, path } = req.body;

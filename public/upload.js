@@ -12,7 +12,8 @@ document.getElementById("file").addEventListener("change", function () {
     try {
       const response = await fetch('/api/upload', {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'include'
       });
 
       const result = await response.json();

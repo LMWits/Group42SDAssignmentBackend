@@ -30,9 +30,10 @@ if (currentFolder && currentPath.length > 0)
         headers: {
           "Content-Type": "application/json"
         },
+        credentials: 'include',
         body: JSON.stringify(payload)
       });
-
+      
       const result=await response.json();
 
       if (response.ok) {
