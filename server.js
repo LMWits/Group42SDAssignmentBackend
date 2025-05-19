@@ -1,31 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require("mongoose");
-require("dotenv").config();
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
-const cookieParser = require('cookie-parser');
+require("dotenv").config(); //configuration used for .env files
+
 const app = express();
+app.use(express.static('public'));
 const port = process.env.NODE_ENV === 'test' ? 0 : (process.env.PORT || 3000);
 const fs = require('fs');
-const axios = require("axios");
-const jwt = require('jsonwebtoken');
-const path = require('path');
+const axios = require("axios"); //for multi-language search
 
-app.use(cors({
-  origin: function(origin, callback) {
-    // const allowed = ["http://localhost:8080", "http://127.0.0.1:8080"];
-    const allowed = ["http://localhost:8080", "http://127.0.0.1:8080", "https://gentle-tree-06c29d803.6.azurestaticapps.net"];
-    
-    if (!origin || allowed.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true
-}));
-app.use(express.json());
-app.use(cookieParser());
+app.use(cors()); //allow CORS from any origin
+app.use(express.json()); //parse JSON bodies
 
 process.on('uncaughtException', (error) => {
   console.error('Uncaught Exception:', error);
@@ -94,6 +79,8 @@ Use this model to save and fetch file data in MongoDB.”
 */
 const filemetas = mongoose.model("filemetas", fileSchema);
 
+
+//MongoDB query: fetches all 'files' json info
 app.get('/files', async (req, res) => {
   try {
     const files = await filemetas.find({});
@@ -112,95 +99,7 @@ app.get('/ping', async (req, res) => {
   }
 });
 
-function requireAuth(req, res, next) {
-  return next();
-  // Debug logging for token extraction
-  console.log('--- requireAuth Debug ---');
-  console.log('Headers:', req.headers);
-  console.log('Cookies:', req.cookies);
-  console.log('Query:', req.query);
-
-  let token = null;
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-    token = req.headers.authorization.split(' ')[1];
-    console.log('Token found in Authorization header:', token);
-  } else if (req.cookies && req.cookies.token) {
-    token = req.cookies.token;
-    console.log('Token found in cookies:', token);
-  } else if (req.query && req.query.token) {
-    token = req.query.token;
-    console.log('Token found in query:', token);
-  } else if (req.headers['x-access-token']) {
-    token = req.headers['x-access-token'];
-    console.log('Token found in x-access-token header:', token);
-  }
-  if (!token) {
-    return res.status(401).send('Unauthorized: No token provided');
-  }
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    return res.status(401).send('Unauthorized: Invalid token');
-  }
-}
-
-app.post('/authorize', (req, res) => {
-  const { userId, email, role } = req.body;
-  if (!userId || !email || !role) {
-    return res.status(400).json({ error: 'Missing userId, email, or role' });
-  }
-  const token = jwt.sign({ userId, email, role }, JWT_SECRET, { expiresIn: '2h' });
-  if (res.cookie) {
-     // Set cookie for cross-site usage (SameSite=None, Secure, and explicit domain)
-    res.cookie('token', token, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true
-    });
-  }
-  res.json({ token });
-});
-
-//app.get('/adminHP.html', requireAuth, (req, res, next) => {
-//  console.log('[AdminHP] Authenticated user:', req.user);
-//  res.sendFile(path.join(__dirname, 'public', 'adminHP.html'));
-//}); 
-
-app.use((req, res, next) => {
-  // Allow unauthenticated access to static assets (css, js, images, favicon, etc.)
-  const publicExtensions = ['.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.woff', '.woff2', '.ttf', '.eot', '.map', '.html'];
-  const ext = path.extname(req.path);
-  if (
-    req.path === '/authorize' ||
-    req.path === '/ping' ||
-    req.path === '/createFolder' ||
-    req.path === '/debug-cookies' ||
-    publicExtensions.includes(ext)
-  ) {
-    // Serve static file without auth
-    const filePath = path.join(__dirname, 'public', req.path);
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-      if (err) {
-        return next();
-      }
-      res.sendFile(filePath);
-    });
-    return;
-  }
-  // For all other routes, require authentication
-  requireAuth(req, res, () => {
-    const filePath = path.join(__dirname, 'public', req.path);
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-      if (err) {
-        return next();
-      }
-      res.sendFile(filePath);
-    });
-  });
-});
-
+//MongoDB query: fetches files json info (files that are without paths/not in folder)
 app.get('/fileWithNoFolder', async (req, res) => {
   try {
     const files = await filemetas.find({});
@@ -218,6 +117,7 @@ app.get('/fileWithNoFolder', async (req, res) => {
   }
 });
 
+//MongoDB query: fetches all unique 'folders' in json array
 app.get('/folders', async (req, res) => {
   try {
     const files = await filemetas.find({}); //Get all files from MongoDB
@@ -246,6 +146,7 @@ app.get('/folders', async (req, res) => {
   }
 });
 
+//MongoDB query: fetches all 'files' in parsed folder
 app.get('/folder/files/:folderName', async (req, res) => {
   try {
     const folder = req.params.folderName;
@@ -274,6 +175,7 @@ app.get('/folder/files/:folderName', async (req, res) => {
   }
 });
 
+//MongoDB query: fetches all folders (in specified) in json array
 app.get('/folders/:folderName', async (req, res) => {
   try {
     const folder = req.params.folderName;
@@ -313,6 +215,7 @@ app.get('/folders/:folderName', async (req, res) => {
   }
 });
 
+// mongoDB query: finds and GETs file by ID
 app.get('/files/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -325,7 +228,7 @@ app.get('/files/:id', async (req, res) => {
   }
 });
 
-//Create folder
+//Create folder: path create in mongoDB
 app.post('/createFolder', async (req, res) => {
   try {
     const { title, description, path } = req.body;
@@ -350,6 +253,8 @@ app.post('/createFolder', async (req, res) => {
   }
 });
 
+
+//mongoDB query: finds file by ID and UPDATES file title,desc,path
 app.patch('/files/:id', async (req, res) => {
   const { id } = req.params;
   const { title, description, path } = req.body;
@@ -405,6 +310,7 @@ app.delete('/files/:id', async (req, res) => {
   }
 });
 
+//MongoDB query: finds file searched for
 app.get('/search', async (req, res) => {
   const { query } = req.query;
 
@@ -564,10 +470,5 @@ async function translateToEnglish(text) {
     return text;
   }
 }
-
-
-app.get('/debug-cookies', (req, res) => {
-  res.json({ cookies: req.cookies, headers: req.headers });
-});
 
 module.exports = app;
