@@ -1,3 +1,19 @@
+
+// Redirect to login if token is missing
+(function checkAuthToken() {
+  const token = localStorage.getItem('serverToken');
+  if (!token) {
+    alert('You must be logged in to access this page.');
+    window.location.href = 'login.html'; // Change to your actual login page if different
+  }
+})();
+
+// Helper function to get Authorization headers
+function getAuthHeaders() {
+  const token = localStorage.getItem('serverToken');
+  return token ? { 'Authorization': 'Bearer ' + token } : {};
+}
+
 document.getElementById("createFolderForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -23,6 +39,14 @@ if (currentFolder && currentPath.length > 0)
       description,
       path
     };
+
+    
+    const headers = {
+       headers: headers,
+        body: JSON.stringify(payload)
+    };
+    console.log('Token:', localStorage.getItem('serverToken'));
+    console.log('Headers being sent:', headers);
 
     try {
       const response = await fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/createFolder", {
@@ -53,9 +77,4 @@ if (currentFolder && currentPath.length > 0)
   });
 
 
-// Helper function to get Authorization headers
-function getAuthHeaders() {
-  const token = localStorage.getItem('serverToken');
-  return token ? { 'Authorization': 'Bearer ' + token } : {};
-}
 
