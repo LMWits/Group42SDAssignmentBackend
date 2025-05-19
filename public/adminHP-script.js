@@ -1,3 +1,17 @@
+// --- BEGIN: Extract token from URL and store in localStorage ---
+(function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+  if (token) {
+    localStorage.setItem('serverToken', token);
+    // Optionally, remove token from URL for cleanliness
+    const url = new URL(window.location);
+    url.searchParams.delete('token');
+    window.history.replaceState({}, document.title, url.pathname + url.search);
+  }
+})();
+// --- END: Extract token from URL and store in localStorage ---
+
 /*
 1. Fetches all top level folders
 Displays them in folderDsiplay <div > found in <main> in adminHP.html
