@@ -52,8 +52,8 @@ if (currentFolder && currentPath.length > 0)
       const response = await fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/createFolder", {
         method: "POST",
         headers: {
-           "Content-Type": "application/json",
-          ...getAuthHeaders()
+           headers: headers,
+        body: JSON.stringify(payload)
         },
         credentials: 'include',
         body: JSON.stringify(payload)
