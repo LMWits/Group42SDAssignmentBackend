@@ -28,7 +28,8 @@ if (currentFolder && currentPath.length > 0)
       const response = await fetch("https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/createFolder", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+           "Content-Type": "application/json",
+          ...getAuthHeaders()
         },
         credentials: 'include',
         body: JSON.stringify(payload)
@@ -50,3 +51,11 @@ if (currentFolder && currentPath.length > 0)
       document.getElementById("status").innerText = "❌ Failed to connect to server.";
     }
   });
+
+
+// Helper function to get Authorization headers
+function getAuthHeaders() {
+  const token = localStorage.getItem('serverToken');
+  return token ? { 'Authorization': 'Bearer ' + token } : {};
+}
+
