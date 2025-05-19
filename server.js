@@ -169,7 +169,7 @@ app.get('/adminHP.html', requireAuth, (req, res, next) => {
 
 app.use((req, res, next) => {
   // Allow unauthenticated access to static assets (css, js, images, favicon, etc.)
-  const publicExtensions = ['.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.woff', '.woff2', '.ttf', '.eot', '.map'];
+  const publicExtensions = ['.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.woff', '.woff2', '.ttf', '.eot', '.map', 'html'];
   const ext = path.extname(req.path);
   if (
     req.path === '/authorize' ||
