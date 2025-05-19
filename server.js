@@ -162,10 +162,10 @@ app.post('/authorize', (req, res) => {
   res.json({ token });
 });
 
-app.get('/adminHP.html', requireAuth, (req, res, next) => {
-  console.log('[AdminHP] Authenticated user:', req.user);
-  res.sendFile(path.join(__dirname, 'public', 'adminHP.html'));
-});
+//app.get('/adminHP.html', requireAuth, (req, res, next) => {
+//  console.log('[AdminHP] Authenticated user:', req.user);
+//  res.sendFile(path.join(__dirname, 'public', 'adminHP.html'));
+//}); 
 
 app.use((req, res, next) => {
   // Allow unauthenticated access to static assets (css, js, images, favicon, etc.)
