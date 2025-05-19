@@ -17,13 +17,14 @@ document.getElementById("file").addEventListener("change", function () {
       });
 
       let result;
+      let responseText = await response.text();
       try {
-        result = await response.json();
+        result = JSON.parse(responseText);
       } catch (jsonErr) {
-        const text = await response.text();
-        console.error('Non-JSON response:', text);
+        console.error('Non-JSON response:', responseText);
         document.getElementById("status").innerText = "❌ Server did not return JSON. Check console for details.";
         return;
+      }
       }
 
         
