@@ -12,22 +12,11 @@ document.getElementById("file").addEventListener("change", function () {
     try {
       const response = await fetch('/api/upload', {
         method: 'POST',
-        body: formData,
-        credentials: 'include'
+        body: formData
       });
 
-      let result;
-      let responseText = await response.text();
-      try {
-        result = JSON.parse(responseText);
-      } catch (jsonErr) {
-        console.error('Non-JSON response:', responseText);
-        document.getElementById("status").innerText = "❌ Server did not return JSON. Check console for details.";
-        return;
-      }
-      }
+      const result = await response.json();
 
-        
       if (response.ok) {
         document.getElementById("status").innerText = result.message;
         alert("File uploaded successfully.");

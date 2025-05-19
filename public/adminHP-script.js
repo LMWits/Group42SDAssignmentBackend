@@ -1,17 +1,3 @@
-// --- BEGIN: Wait for token before fetching folders/files ---
-function waitForTokenAndRun(fn, maxWait = 2000) {
-  const start = Date.now();
-  function check() {
-    if (localStorage.getItem('serverToken')) {
-      fn();
-    } else if (Date.now() - start < maxWait) {
-      setTimeout(check, 50);
-    } else {
-      console.error('Token not found in localStorage after waiting.');
-    }
-  }
-  check();
-}
 /*
 1. Fetches all top level folders
 Displays them in folderDsiplay <div > found in <main> in adminHP.html
@@ -21,48 +7,55 @@ remote- https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/f
 or
 local - http://localhost:3000/folders
 */
+fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
 
-// Replace direct fetch calls with waitForTokenAndRun wrappers
-waitForTokenAndRun(fetchFolders);
-waitForTokenAndRun(fetchFilesWithNoFolder);
+        .then(folders => {
+          const folderList = document.createElement("ul");
+          folderList.className = "folderList";
 
-function fetchFolders() {
-  fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders`, {
-    headers: getAuthHeaders()
-  })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    })
-    .then(folders => {
-      const folderList = document.createElement("ul");
-      folderList.className = "folderList";
-      folders.forEach((folder,index) => {
-        const folderItem = document.createElement("li");
-        folderItem.className = "folder-item";
-        folderItem.innerHTML = `
-          <i class="fas fa-folder"></i>
-          <button>${folder}</button>`;
-        folderItem.addEventListener("click", (e) => {
-          e.stopPropagation();
-          localStorage.setItem("currentFolder", folder);
-          localStorage.setItem("currentPath", JSON.stringify([folder]));
-          window.location.href = "folder.html";
-        });
-        folderList.appendChild(folderItem);
+          folders.forEach((folder,index) => {
+            const folderItem = document.createElement("li");
+            folderItem.className = "folder-item";
+
+            folderItem.innerHTML = `
+              <i class="fas fa-folder"></i>
+              <button>${folder}</button>`;
+
+
+
+      folderItem.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        localStorage.setItem("currentFolder", folder);
+        localStorage.setItem("currentPath", JSON.stringify([folder])); //Resets our path
+        window.location.href = "folder.html";
       });
-      const sidebar = document.querySelector(".sidebar") || createSidebar();
-      sidebar.appendChild(folderList);
-    })
-    .catch(error => {
-      const errorMsg = document.createElement("p");
-      errorMsg.style.cssText = "text-align:center; margin:10px; border-radius:40px; width:250px; background:red; color:white;";
-      errorMsg.textContent = "Error loading folders from server.";
-      document.querySelector(".file-manager").appendChild(errorMsg);
-      console.error("Fetch error:", error);
+
+      folderList.appendChild(folderItem);
     });
+
+    const sidebar = document.querySelector(".sidebar") || createSidebar();
+    sidebar.appendChild(folderList);
+  })
+      .catch(error => {
+          const errorMsg = document.createElement("p");
+          errorMsg.style.cssText = "text-align:center; margin:10px; border-radius:40px; width:250px; background:red; color:white;";
+          errorMsg.textContent = "Error loading folders from server.";
+          document.querySelector(".file-manager").appendChild(errorMsg);
+          console.error("Fetch error:", error);
+        });
+
+function createSidebar() {
+  const sidebar = document.createElement("section");
+  sidebar.className = "sidebar";
+  document.querySelector(".file-manager").appendChild(sidebar);
+  return sidebar;
 }
 
 
@@ -76,57 +69,79 @@ or
 local - http://localhost:3000/fileWithNoFolder
 
 */
+fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fileWithNoFolder`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then(files => {
+          const fileGrid = document.createElement("section");
+          fileGrid.className = "file-grid";
 
-function fetchFilesWithNoFolder() {
-  fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fileWithNoFolder`, {
-    headers: getAuthHeaders()
-  })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    })
-    .then(files => {
-      const fileGrid = document.createElement("section");
-      fileGrid.className = "file-grid";
-      files.forEach((file,i) => {
-        const fileItem = document.createElement("section");
-        fileItem.className = "file-item";
-        // Determine icon based on file type
-        let icon = "fa-file";
-        if (file.originalName) {
-          const ext = file.originalName.split('.').pop().toLowerCase();
-          if (["jpg", "jpeg", "png", "gif"].includes(ext)) icon = "fa-file-image";
-          else if (["mp4", "mov", "avi"].includes(ext)) icon = "fa-file-video";
-          else if (["mp3", "wav"].includes(ext)) icon = "fa-file-audio";
-          else if (["pdf"].includes(ext)) icon = "fa-file-pdf";
-        }
-        fileItem.innerHTML = `
-          <section class="file-icon">
-            <i class="fas ${icon}"></i>
-          </section>
-          <section class="file-name">${file.title || 'Untitled'}</section>
-          <section class="file-desc">${file.description}</section>
-          <section class="file-year">${formatDate(file.uploadDate)}</section>
-        `;
-        // Add click handler for more info
-        fileItem.addEventListener("click", () => {
-          localStorage.setItem("selectedFile", JSON.stringify(file));
-          window.location.href = "fileDetailsAdmin.html";
+          files.forEach((file,i) => {
+            const fileItem = document.createElement("section");
+            fileItem.className = "file-item";
+
+            // Determine icon based on file type
+            let icon = "fa-file";
+            if (file.originalName) {
+              const ext = file.originalName.split('.').pop().toLowerCase();
+              if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) icon = "fa-file-image";
+              else if (['mp4', 'mov', 'avi'].includes(ext)) icon = "fa-file-video";
+              else if (['mp3', 'wav'].includes(ext)) icon = "fa-file-audio";
+              else if (['pdf'].includes(ext)) icon = "fa-file-pdf";
+            }
+
+            fileItem.innerHTML = `
+              <section class="file-icon">
+                <i class="fas ${icon}"></i>
+              </section>
+              <section class="file-name">${file.title || 'Untitled'}</section>
+              <section class="file-desc">${file.description}</section>
+              <section class="file-year">${formatDate(file.uploadDate)}</section>
+            `;
+
+            // Add click handler for more info
+            fileItem.addEventListener("click", () => {
+              localStorage.setItem("selectedFile", JSON.stringify(file));
+              window.location.href = "fileDetailsAdmin.html";
+            });
+
+            fileGrid.appendChild(fileItem);
+          });
+
+          // Add file grid to main content
+          document.querySelector(".file-manager").appendChild(fileGrid);
+        })
+        .catch(error => {
+          const errorMsg = document.createElement("p");
+          errorMsg.style.cssText = "text-align:center; margin:10px; border-radius:40px; width:250px; background:red; color:white;";
+          errorMsg.textContent = "Error loading files from server.";
+          document.querySelector(".file-manager").appendChild(errorMsg);
+          console.error("Fetch error:", error);
         });
-        fileGrid.appendChild(fileItem);
+
+       //make sure path is empty if we click on createFolder from the HP
+       document.addEventListener("DOMContentLoaded", function () {
+        const createFolderBtn = document.getElementById("createFolderBtn");
+
+        if (createFolderBtn) {
+          createFolderBtn.addEventListener("click", function () {
+            console.log("Create Folder button clicked"); // Debugging log
+            localStorage.removeItem("currentFolder");
+            localStorage.removeItem("currentPath");
+            console.log("localStorage cleared"); // Debugging log
+            setTimeout(() => {
+              window.location.href = "createFolder.html"; // Ensure redirection happens after clearing
+            }, 500); // Delay for a brief moment to ensure localStorage is cleared before redirect
+          });
+        } else {
+          console.error("Create Folder button not found.");
+        }
       });
-      document.querySelector(".file-manager").appendChild(fileGrid);
-    })
-    .catch(error => {
-      const errorMsg = document.createElement("p");
-      errorMsg.style.cssText = "text-align:center; margin:10px; border-radius:40px; width:250px; background:red; color:white;";
-      errorMsg.textContent = "Error loading files from server.";
-      document.querySelector(".file-manager").appendChild(errorMsg);
-      console.error("Fetch error:", error);
-    });
-}
+
 
 /*
 3. Fetches files as they are being typed into the search bar
@@ -137,13 +152,26 @@ or
 local - http://localhost:3000/search?query=${encodeURIComponent(query)}
 */
 
+let originalFolders = null;
+
+// Store folders when page loaded
+document.addEventListener('DOMContentLoaded', () => {
+  originalFolders = document.querySelector(".file-manager").innerHTML;
+});
+
 const searchInput = document.getElementById("searchInput");
 const searchButton = document.querySelector(".searchButton");
 
 // Option a: trigger search as you type
 searchInput.addEventListener("input", () => {
   const query = searchInput.value.trim();
-  if (query.length > 1) performSearch(query);
+  if (query.length > 1)
+  {performSearch(query);
+  }
+  else
+  {
+    restoreOriginalFolders();
+  }
 });
 
 // Option b: full search when button clicked
@@ -152,9 +180,24 @@ searchButton.addEventListener("click", () => {
   if (query) performSearch(query);
 });
 
+searchButton.addEventListener("click",() =>
+{
+  searchInput.value="";
+  restoreOriginalFolders();
+  searchInput.focus();
+});
+
+function restoreOriginalFolders()
+{
+  if (originalFolders)
+  {
+    const displayArea = document.querySelector(".file-manager");
+    displayArea.innerHTML=originalFolders;
+  }
+}
+
 function performSearch(query) {
-   fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/search?query=${encodeURIComponent(query)}`,
-    { headers: getAuthHeaders() })
+  fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/search?query=${encodeURIComponent(query)}`)
     .then(res => res.json())
     .then(results => {
 
@@ -260,11 +303,10 @@ function formatDate(isoDate) {
     month: 'short',
   });
 }
-// Helper function to get Authorization headers
-function getAuthHeaders() {
-  const token = localStorage.getItem('serverToken');
-  return token ? { 'Authorization': 'Bearer ' + token } : {};
-}
+
+
+
+
 /*
 4. Fetches all 'filemetas' json files
 Displays them in fileDisplay <div > found in <main> in adminHP.html
@@ -321,4 +363,3 @@ fetch("http://localhost:3000/files")
           console.error("Fetch error:", error);
         });
 */
-
