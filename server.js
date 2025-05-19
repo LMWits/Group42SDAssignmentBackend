@@ -94,7 +94,7 @@ Use this model to save and fetch file data in MongoDB.”
 */
 const filemetas = mongoose.model("filemetas", fileSchema);
 
-app.get('/files', requireAuth, async (req, res) => {
+app.get('/files', async (req, res) => {
   try {
     const files = await filemetas.find({});
     res.json(files); // Send back JSON
@@ -199,7 +199,7 @@ app.use((req, res, next) => {
   });
 });
 
-app.get('/fileWithNoFolder', requireAuth, async (req, res) => {
+app.get('/fileWithNoFolder', async (req, res) => {
   try {
     const files = await filemetas.find({});
     const fileWithNoFolder = new Set();
@@ -216,7 +216,7 @@ app.get('/fileWithNoFolder', requireAuth, async (req, res) => {
   }
 });
 
-app.get('/folders', requireAuth, async (req, res) => {
+app.get('/folders', async (req, res) => {
   try {
     const files = await filemetas.find({}); //Get all files from MongoDB
     const folderSet = new Set();
@@ -244,7 +244,7 @@ app.get('/folders', requireAuth, async (req, res) => {
   }
 });
 
-app.get('/folder/files/:folderName', requireAuth, async (req, res) => {
+app.get('/folder/files/:folderName', async (req, res) => {
   try {
     const folder = req.params.folderName;
 
@@ -272,7 +272,7 @@ app.get('/folder/files/:folderName', requireAuth, async (req, res) => {
   }
 });
 
-app.get('/folders/:folderName', requireAuth, async (req, res) => {
+app.get('/folders/:folderName', async (req, res) => {
   try {
     const folder = req.params.folderName;
     const followingFoldersSet = new Set(); //set to hold folder that comes after given 'folderName' in the path of each file
@@ -311,7 +311,7 @@ app.get('/folders/:folderName', requireAuth, async (req, res) => {
   }
 });
 
-app.get('/files/:id', requireAuth, async (req, res) => {
+app.get('/files/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -324,7 +324,7 @@ app.get('/files/:id', requireAuth, async (req, res) => {
 });
 
 //Create folder
-app.post('/createFolder', requireAuth, async (req, res) => {
+app.post('/createFolder', async (req, res) => {
   try {
     const { title, description, path } = req.body;
 
@@ -348,7 +348,7 @@ app.post('/createFolder', requireAuth, async (req, res) => {
   }
 });
 
-app.patch('/files/:id', requireAuth, async (req, res) => {
+app.patch('/files/:id', async (req, res) => {
   const { id } = req.params;
   const { title, description, path } = req.body;
 
@@ -377,7 +377,7 @@ const { BlobServiceClient } = require('@azure/storage-blob');
 const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING);
 const containerClient = blobServiceClient.getContainerClient(process.env.AZURE_CONTAINER_NAME);
 
-app.delete('/files/:id', requireAuth, async (req, res) => {
+app.delete('/files/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -403,7 +403,7 @@ app.delete('/files/:id', requireAuth, async (req, res) => {
   }
 });
 
-app.get('/search', requireAuth, async (req, res) => {
+app.get('/search', async (req, res) => {
   const { query } = req.query;
 
   if (!query) return res.status(400).json({ message: "Query required" });
