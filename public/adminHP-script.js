@@ -265,32 +265,6 @@ function getAuthHeaders() {
   const token = localStorage.getItem('serverToken');
   return token ? { 'Authorization': 'Bearer ' + token } : {};
 }
-
-// --- BEGIN: Wait for token before fetching folders/files ---
-function waitForTokenAndRun(fn, maxWait = 2000) {
-  const start = Date.now();
-  function check() {
-    if (localStorage.getItem('serverToken')) {
-      fn();
-    } else if (Date.now() - start < maxWait) {
-      setTimeout(check, 50);
-    } else {
-      console.error('Token not found in localStorage after waiting.');
-    }
-  }
-  check();
-}
-// --- END: Wait for token before fetching folders/files ---
-
-// Replace direct fetch calls with waitForTokenAndRun wrappers
-waitForTokenAndRun(fetchFolders);
-waitForTokenAndRun(fetchFilesWithNoFolder);
-
-
-
-
-
-
 /*
 4. Fetches all 'filemetas' json files
 Displays them in fileDisplay <div > found in <main> in adminHP.html
