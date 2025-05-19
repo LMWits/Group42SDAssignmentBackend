@@ -152,8 +152,13 @@ app.post('/authorize', (req, res) => {
   }
   const token = jwt.sign({ userId, email, role }, JWT_SECRET, { expiresIn: '2h' });
   if (res.cookie) {
-    // Set cookie for cross-site usage (SameSite=None, Secure)
-    res.cookie('token', token, { httpOnly: true, sameSite: 'none', secure: true });
+     // Set cookie for cross-site usage (SameSite=None, Secure, and explicit domain)
+    res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      domain: '.azurewebsites.net' // Set to your backend's parent domain
+    });
   }
   res.json({ token });
 });
