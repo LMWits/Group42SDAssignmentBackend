@@ -84,7 +84,7 @@ npm test
 Code coverage is uploaded to [Codecov](https://about.codecov.io/).
 
 ---
-##  Usage
+## Usage
 
 Admins can:
 
