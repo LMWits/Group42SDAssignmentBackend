@@ -4,7 +4,7 @@ This repository contains the backend source code for the arcHive. It supports se
 
 ---
 
-##  Features
+## Features
 
 - File and folder creation with metadata  
 -  Azure Blob Storage integration  
