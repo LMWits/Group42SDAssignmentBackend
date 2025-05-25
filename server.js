@@ -20,7 +20,7 @@ function getAuthHeaders() {
 app.use(cors({
   origin: function(origin, callback) {
     // const allowed = ["http://localhost:8080", "http://127.0.0.1:8080"];
-    const allowed = ["http://localhost:8080", "http://127.0.0.1:8080", "https://gentle-tree-06c29d803.6.azurestaticapps.net"];
+    const allowed = ["http://localhost:8080", "http://127.0.0.1:8080", "https://gentle-tree-06c29d803.6.azurestaticapps.net", "https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net"];
     
     if (!origin || allowed.includes(origin)) {
       callback(null, true);

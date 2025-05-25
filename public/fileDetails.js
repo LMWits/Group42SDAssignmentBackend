@@ -1,3 +1,8 @@
+function getAuthHeaders() {
+  const token = localStorage.getItem('serverToken');
+  return token ? { 'Authorization': 'Bearer ' + token } : {};
+}
+
 const file = JSON.parse(localStorage.getItem("selectedFile"));
 
 if (!file) {
@@ -25,7 +30,11 @@ remote - https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/
 */
 // Function to load and display file details
 function loadFileDetails() {
-  fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/files/${fileId}`)
+  fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/files/${fileId}`, {
+    headers: {
+      ...getAuthHeaders()
+    }
+  })
     .then((res) => res.json())
     .then((file) => {
       fileTitle.textContent = file.title;
@@ -63,17 +72,18 @@ if (form) {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
-  //auto-fill file & handle input
     const updatedFile = {
       title: titleInput.value,
       description: descriptionInput.value,
       path: folderInput.value ? folderInput.value.split("/").map(f => f.trim()) : [],
     };
 
-    //update request
     fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/files/${fileId}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders()
+      },
       body: JSON.stringify(updatedFile),
     })
       .then((res) => {
@@ -104,9 +114,11 @@ remote - https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.netf
 function deleteFile() {
   if (!confirm("Are you sure you want to delete this file?")) return;
 
-  //delete request
   fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/files/${fileId}`, {
     method: "DELETE",
+    headers: {
+      ...getAuthHeaders()
+    }
   })
     .then((res) => {
       if (!res.ok) throw new Error("Failed to delete file.");
