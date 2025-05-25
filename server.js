@@ -116,16 +116,12 @@ function requireAuth(req, res, next) {
   // Debug logging for token extraction
   console.log('--- requireAuth Debug ---');
   console.log('Headers:', req.headers);
-  console.log('Cookies:', req.cookies);
   console.log('Query:', req.query);
 
   let token = null;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
     token = req.headers.authorization.split(' ')[1];
     console.log('Token found in Authorization header:', token);
-  } else if (req.cookies && req.cookies.token) {
-    token = req.cookies.token;
-    console.log('Token found in cookies:', token);
   } else if (req.query && req.query.token) {
     token = req.query.token;
     console.log('Token found in query:', token);
@@ -151,14 +147,7 @@ app.post('/authorize', (req, res) => {
     return res.status(400).json({ error: 'Missing userId, email, or role' });
   }
   const token = jwt.sign({ userId, email, role }, JWT_SECRET, { expiresIn: '2h' });
-  if (res.cookie) {
-     // Set cookie for cross-site usage (SameSite=None, Secure, and explicit domain)
-    res.cookie('token', token, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true
-    });
-  }
+  // No cookies: client must store token in localStorage and send in Authorization header
   res.json({ token });
 });
 

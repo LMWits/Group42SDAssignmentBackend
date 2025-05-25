@@ -8,6 +8,17 @@ or
 local - http://localhost:3000/folders
 */
 
+// Extract token from URL and store in localStorage if present
+(function storeTokenFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  if (token) {
+    localStorage.setItem('serverToken', token); // Use the correct key for your app
+    // Optionally, remove the token from the URL for cleanliness
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+})();
+
 // Helper function to get Authorization headers
 function getAuthHeaders() {
   const token = localStorage.getItem('serverToken');
