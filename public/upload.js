@@ -3,6 +3,11 @@ document.getElementById("file").addEventListener("change", function () {
     document.getElementById("fileNameDisplay").textContent = fileName;
   });
 
+  function getAuthHeaders() {
+    const token = localStorage.getItem('serverToken');
+    return token ? { 'Authorization': 'Bearer ' + token } : {};
+  }
+
   document.getElementById("uploadForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -12,7 +17,10 @@ document.getElementById("file").addEventListener("change", function () {
     try {
       const response = await fetch('/api/upload', {
         method: 'POST',
-        body: formData
+        body: formData,
+        headers: {
+          ...getAuthHeaders()
+        }
       });
 
       const result = await response.json();

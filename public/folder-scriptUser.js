@@ -17,6 +17,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Clear folderDisplay to prevent old folders from showing after reload
     folderDisplay.innerHTML = "";
   
+    function getAuthHeaders() {
+      const token = localStorage.getItem('serverToken');
+      return token ? { 'Authorization': 'Bearer ' + token } : {};
+    }
+  
     // 1. Fetch all top level folders in the current folder
     /*
   
@@ -25,7 +30,11 @@ document.addEventListener("DOMContentLoaded", () => {
   or
   Local - http://localhost:3000/folders/${encodeURIComponent(folder)}
     */
-    fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders/${encodeURIComponent(folder)}`)
+    fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders/${encodeURIComponent(folder)}`, {
+      headers: {
+        ...getAuthHeaders()
+      }
+    })
         .then(response => {
             if (!response.ok) {
                 throw new Error("Network response was not ok");
@@ -75,7 +84,11 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Folder being fetched:", folder); //remove
     console.log("Fetch URL:", `https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folder/files/${encodeURIComponent(folder)}`); //remove
   
-    fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folder/files/${encodeURIComponent(folder)}`)
+    fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folder/files/${encodeURIComponent(folder)}`, {
+      headers: {
+        ...getAuthHeaders()
+      }
+    })
         .then(res => {
             if (!res.ok) throw new Error(`Server responded with ${res.status}`);
             return res.json();
@@ -168,4 +181,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   
   });
-  
+
