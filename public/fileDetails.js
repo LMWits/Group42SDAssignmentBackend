@@ -119,4 +119,21 @@ function deleteFile() {
     });
 }
 
+//4. Download the file
+function downloadFile() {
+  if (!file || !file.blobUrl) {
+    alert("File URL not available.");
+    return;
+  }
+
+  const a = document.createElement("a");
+  a.href = file.blobUrl;
+  a.download = "";  // Browser decides filename
+  a.target = "_blank";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+
 loadFileDetails();

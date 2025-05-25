@@ -129,8 +129,8 @@ document.addEventListener("DOMContentLoaded", () => {
               try {
                 const a = document.createElement("a");
                 a.href = url;
-                a.download = ""; // optional, allows browser to infer filename
-                a.target = "_blank"; // open in new tab if desired
+                a.download = ""; 
+                a.target = "_blank"; 
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
