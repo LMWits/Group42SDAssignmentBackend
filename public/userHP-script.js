@@ -7,7 +7,15 @@ remote- https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/f
 or
 local - http://localhost:3000/folders
 */
-fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders`)
+// Helper function to get Authorization headers
+function getAuthHeaders() {
+  const token = localStorage.getItem('serverToken');
+  return token ? { 'Authorization': 'Bearer ' + token } : {};
+}
+
+fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/folders`, {
+  headers: getAuthHeaders()
+})
         .then(response => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -69,7 +77,9 @@ or
 local - http://localhost:3000/fileWithNoFolder
 
 */
-fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fileWithNoFolder`)
+fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/fileWithNoFolder`, {
+  headers: getAuthHeaders()
+})
         .then(response => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -168,7 +178,8 @@ searchButton.addEventListener("click", () => {
 });
 
 function performSearch(query) {
-  fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/search?query=${encodeURIComponent(query)}`)
+  fetch(`https://group42backendv2-hyckethpe4fwfjga.uksouth-01.azurewebsites.net/search?query=${encodeURIComponent(query)}`,
+    { headers: getAuthHeaders() })
     .then(res => res.json())
     .then(results => {
 
