@@ -11,6 +11,12 @@ const axios = require("axios");
 const jwt = require('jsonwebtoken');
 const path = require('path');
 
+// Helper function to get Authorization headers
+function getAuthHeaders() {
+  const token = localStorage.getItem('serverToken');
+  return token ? { 'Authorization': 'Bearer ' + token } : {};
+}
+
 app.use(cors({
   origin: function(origin, callback) {
     // const allowed = ["http://localhost:8080", "http://127.0.0.1:8080"];
@@ -106,38 +112,27 @@ app.get('/files', async (req, res) => {
 app.get('/ping', async (req, res) => {
   try {
     res.status(200).send("Pong");
-
   } catch (err) {
     res.status(500).send("Error pinging");
   }
 });
 
+// JWT authentication middleware
 function requireAuth(req, res, next) {
-  // Debug logging for token extraction
-  console.log('--- requireAuth Debug ---');
-  console.log('Headers:', req.headers);
-  console.log('Query:', req.query);
-
+  const authHeader = req.headers.authorization;
   let token = null;
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-    token = req.headers.authorization.split(' ')[1];
-    console.log('Token found in Authorization header:', token);
-  } else if (req.query && req.query.token) {
-    token = req.query.token;
-    console.log('Token found in query:', token);
-  } else if (req.headers['x-access-token']) {
-    token = req.headers['x-access-token'];
-    console.log('Token found in x-access-token header:', token);
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.split(' ')[1];
   }
   if (!token) {
-    return res.status(401).send('Unauthorized: No token provided');
+    return res.status(401).json({ error: 'Unauthorized: No token provided' });
   }
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     next();
   } catch (err) {
-    return res.status(401).send('Unauthorized: Invalid token');
+    return res.status(401).json({ error: 'Unauthorized: Invalid token' });
   }
 }
 
@@ -177,15 +172,7 @@ app.use((req, res, next) => {
     return;
   }
   // For all other routes, require authentication
-  requireAuth(req, res, () => {
-    const filePath = path.join(__dirname, 'public', req.path);
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-      if (err) {
-        return next();
-      }
-      res.sendFile(filePath);
-    });
-  });
+  requireAuth(req, res, next);
 });
 
 app.get('/fileWithNoFolder', async (req, res) => {
@@ -316,6 +303,7 @@ app.get('/files/:id', async (req, res) => {
 app.post('/createFolder', async (req, res) => {
   try {
     const { title, description, path } = req.body;
+
 
     // Create an entry with no blob fields since it's a folder
     const newFolder = new filemetas({
@@ -476,7 +464,6 @@ app.get('/search', async (req, res) => {
     res.status(500).send("Error searching files");
   }
 });
-
 
 
 //Helper funtion to remove stop words in search query, allows for NLP
