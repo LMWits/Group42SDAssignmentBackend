@@ -11,9 +11,9 @@
 
   <header>
     <section class="header-left">
-      <a  href="adminHP.html" style="text-decoration: none;">
+      <a href="adminHP.html" style="text-decoration: none;">
         <h1 class="title">arcHIVE</h1>
-        </a>
+      </a>
       <section calss="center-content">
         <a href="folderCreation.html">
           <button class="createFolderBtn">Create Folder</button>
@@ -21,30 +21,35 @@
         <a href="upload.html">
           <button class="uploadButton">Upload File</button>
         </a>
-      <input type="text" class="search-input" placeholder="Search files..." id="searchInput" />
-      <a href="userHP.html" class="clearButton">Clear Search</a>
+        <input type="text" class="search-input" placeholder="Search files..." id="searchInput" />
+        <a href="userHP.html" class="clearButton">Clear Search</a>
+      </section>
+      <section class="adminHeader">
+        <button class="ManageAdminRequest" id="requestAdminBtn">Admin Requests</button>
+      </section>
     </section>
-    <section class="adminHeader">
-      <button class="ManageAdminRequest" id="requestAdminBtn"> Admin Requests</button>
+
+    <!-- Added Admin Profile Button -->
+    <section class="header-right">
+      <button class="profileButton" onclick="window.location.href='https://gentle-tree-06c29d803.6.azurestaticapps.net/Admin UI Login/adminAccountPage.html'">User Profile</button> 
     </section>
   </header>
 
-<section class="file-manager">
-  <section class="sidebar">
-    <article class="sidebar-head">
-      <h2>Folders</h2>
-      <br>
-      <br>
-    </article>
-    </article>
+  <section class="file-manager">
+    <section class="sidebar">
+      <article class="sidebar-head">
+        <h2>Folders</h2>
+        <br><br>
+      </article>
+    </section>
   </section>
-</section>
+
   <script src="adminHP-script.js"></script>
   <script>
     document.getElementById("requestAdminBtn").onclick = function () {
-        window.location.href = "https://gentle-tree-06c29d803.6.azurestaticapps.net/AdminPendingRequests/PendingRequestList.html";
+      window.location.href = "https://gentle-tree-06c29d803.6.azurestaticapps.net/AdminPendingRequests/PendingRequestList.html";
     };
-</script>
+  </script>
 
 </body>
 </html>
