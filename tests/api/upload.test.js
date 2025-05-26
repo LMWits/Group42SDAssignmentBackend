@@ -59,9 +59,116 @@ describe('File Upload API', function() {
     console.log('Upload API test cleanup complete');
   });
 
-  // All tests removed since they were failing
-  it('placeholder to keep the test suite structure', function() {
-    // This is just a placeholder test that always passes
-    expect(true).to.be.true;
+  // Test: FileMeta model should save and retrieve a document
+  it('should save and retrieve a FileMeta document', async function() {
+    const meta = new FileMeta({
+      title: 'Test File',
+      description: 'A test file',
+      azureBlobName: 'blob123',
+      blobUrl: 'http://example.com/blob',
+      originalName: 'test.txt',
+      path: ['folder1', 'folder2']
+    });
+    await meta.save();
+    const found = await FileMeta.findOne({ azureBlobName: 'blob123' });
+    expect(found).to.exist;
+    expect(found.title).to.equal('Test File');
+    expect(found.path).to.deep.equal(['folder1', 'folder2']);
+  });
+
+  // Test: FileMeta model should default uploadDate
+  it('should set uploadDate by default', async function() {
+    const meta = new FileMeta({
+      title: 'Date Test',
+      description: 'Check date',
+      azureBlobName: 'dateblob',
+      blobUrl: 'http://example.com/date',
+      originalName: 'date.txt',
+      path: []
+    });
+    await meta.save();
+    const found = await FileMeta.findOne({ azureBlobName: 'dateblob' });
+    expect(found.uploadDate).to.be.an.instanceof(Date);
+  });
+
+  // Test: FileMeta model should not save without required fields
+  it('should not save FileMeta without required fields', async function() {
+    const meta = new FileMeta({});
+    let error = null;
+    try {
+      await meta.save();
+    } catch (err) {
+      error = err;
+    }
+    expect(error).to.exist;
+  });
+
+  // Test: FileMeta model should allow empty path array
+  it('should allow saving FileMeta with empty path array', async function() {
+    const meta = new FileMeta({
+      title: 'Empty Path',
+      description: 'No folders',
+      azureBlobName: 'emptypath',
+      blobUrl: 'http://example.com/emptypath',
+      originalName: 'empty.txt',
+      path: []
+    });
+    await meta.save();
+    const found = await FileMeta.findOne({ azureBlobName: 'emptypath' });
+    expect(found).to.exist;
+    expect(found.path).to.deep.equal([]);
+  });
+
+  // Test: FileMeta model should update fields
+  it('should update FileMeta fields', async function() {
+    const meta = new FileMeta({
+      title: 'Update Test',
+      description: 'Before update',
+      azureBlobName: 'updateme',
+      blobUrl: 'http://example.com/updateme',
+      originalName: 'update.txt',
+      path: ['old']
+    });
+    await meta.save();
+    meta.title = 'Updated Title';
+    meta.description = 'After update';
+    meta.path = ['new'];
+    await meta.save();
+    const found = await FileMeta.findOne({ azureBlobName: 'updateme' });
+    expect(found.title).to.equal('Updated Title');
+    expect(found.description).to.equal('After update');
+    expect(found.path).to.deep.equal(['new']);
+  });
+
+  // Test: FileMeta model should delete a document
+  it('should delete a FileMeta document', async function() {
+    const meta = new FileMeta({
+      title: 'Delete Test',
+      description: 'To be deleted',
+      azureBlobName: 'deleteblob',
+      blobUrl: 'http://example.com/delete',
+      originalName: 'delete.txt',
+      path: ['delete']
+    });
+    await meta.save();
+    await FileMeta.deleteOne({ azureBlobName: 'deleteblob' });
+    const found = await FileMeta.findOne({ azureBlobName: 'deleteblob' });
+    expect(found).to.not.exist;
+  });
+  
+  describe('GET /files', () => {
+    it('should return an array of files (empty if none exist)', async () => {
+      const res = await chai.request(app).get('/files');
+      expect(res).to.have.status(200);
+      expect(res.body).to.be.an('array');
+    });
+  });
+
+  describe('GET /ping', () => {
+    it('should return pong', async () => {
+      const res = await chai.request(app).get('/ping');
+      expect(res).to.have.status(200);
+      expect(res.body).to.have.property('message', 'pong');
+    });
   });
 });

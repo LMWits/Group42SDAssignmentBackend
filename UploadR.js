@@ -1,4 +1,3 @@
-
 require("dotenv").config(); 
 const app = require('./server');
 const multer = require('multer');
@@ -64,6 +63,5 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
   } catch (err) {
     console.error('❌ Upload error:', err);
     res.status(500).json({ message: 'Server error during upload.' });
-    res.status(500).json({ message: 'Server error during upload.', error: err.message });
   }
 });

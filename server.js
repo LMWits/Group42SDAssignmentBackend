@@ -83,7 +83,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 //define json schema
 const fileSchema = new mongoose.Schema({
-  title: String,               // Name of the file
+  title: { type: String, required: true },               // Name of the file
   description: String,         // Extra info about it
   azureBlobName: String,       // Name of file in Azure blob
   blobUrl: String,             // URL to download/view the file
@@ -93,29 +93,7 @@ const fileSchema = new mongoose.Schema({
 });
 
 //define FileMeta model to interact with mongoDB
-/*
-its telling Mongoose:
-“Hey, here's a model called FileMeta, based on this schema. 
-Use this model to save and fetch file data in MongoDB.”
-*/
 const filemetas = mongoose.model("filemetas", fileSchema);
-
-app.get('/files', async (req, res) => {
-  try {
-    const files = await filemetas.find({});
-    res.json(files); // Send back JSON
-  } catch (err) {
-    res.status(500).send("Error fetching files from database");
-  }
-});
-
-app.get('/ping', async (req, res) => {
-  try {
-    res.status(200).send("Pong");
-  } catch (err) {
-    res.status(500).send("Error pinging");
-  }
-});
 
 // JWT authentication middleware
 function requireAuth(req, res, next) {
@@ -135,6 +113,46 @@ function requireAuth(req, res, next) {
     return res.status(401).json({ error: 'Unauthorized: Invalid token' });
   }
 }
+
+// Apply requireAuth to all API routes except public endpoints
+app.use((req, res, next) => {
+  const publicExtensions = ['.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.woff', '.woff2', '.ttf', '.eot', '.map', '.html'];
+  const ext = path.extname(req.path);
+  if (
+    req.path === '/authorize' ||
+    req.path === '/ping' ||
+    req.path === '/debug-cookies' ||
+    publicExtensions.includes(ext)
+  ) {
+    // Serve static file without auth
+    const filePath = path.join(__dirname, 'public', req.path);
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        return next();
+      }
+      res.sendFile(filePath);
+    });
+    return;
+  }
+  requireAuth(req, res, next);
+});
+
+app.get('/files', async (req, res) => {
+  try {
+    const files = await filemetas.find({});
+    res.json(files); // Send back JSON
+  } catch (err) {
+    res.status(500).send("Error fetching files from database");
+  }
+});
+
+app.get('/ping', async (req, res) => {
+  try {
+    res.status(200).json({ message: 'pong' });
+  } catch (err) {
+    res.status(500).send("Error pinging");
+  }
+});
 
 app.post('/authorize', (req, res) => {
   const { userId, email, role } = req.body;
@@ -303,7 +321,9 @@ app.get('/files/:id', async (req, res) => {
 app.post('/createFolder', async (req, res) => {
   try {
     const { title, description, path } = req.body;
-
+    if (!title || !Array.isArray(path)) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
 
     // Create an entry with no blob fields since it's a folder
     const newFolder = new filemetas({

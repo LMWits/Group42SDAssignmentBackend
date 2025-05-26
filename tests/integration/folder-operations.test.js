@@ -107,5 +107,25 @@ describe('Folder Integration Tests', () => {
       expect(filesInNewPath).to.have.lengthOf(1);
       expect(filesInNewPath[0].title).to.equal('Movable File');
     });
+
+    it('should handle file path changes correctly', async () => {
+      // Create a file in a folder
+      const meta = new FileMeta({
+        title: 'Move Test',
+        description: 'To be moved',
+        azureBlobName: 'moveme',
+        blobUrl: 'http://example.com/moveme',
+        originalName: 'move.txt',
+        path: ['folderA']
+      });
+      await meta.save();
+
+      // Simulate moving file to another folder
+      meta.path = ['folderB'];
+      await meta.save();
+
+      const found = await FileMeta.findOne({ azureBlobName: 'moveme' });
+      expect(found.path).to.deep.equal(['folderB']);
+    });
   });
 });

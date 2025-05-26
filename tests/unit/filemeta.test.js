@@ -83,4 +83,33 @@ describe('FileMeta Model Unit Tests', () => {
     expect(savedFileMeta._id).to.exist;
     expect(savedFileMeta.path).to.be.an('array').that.is.empty;
   });
+
+  it('should allow missing optional fields', async () => {
+    const meta = new FileMeta({
+      title: 'No Description',
+      azureBlobName: 'no-desc',
+      blobUrl: 'http://example.com/no-desc',
+      originalName: 'no-desc.txt',
+      path: []
+    });
+    await meta.save();
+    const found = await FileMeta.findOne({ azureBlobName: 'no-desc' });
+    expect(found).to.exist;
+    expect(found.description).to.be.undefined;
+  });
+
+  it('should handle empty path array', async () => {
+    const meta = new FileMeta({
+      title: 'Empty Path',
+      description: 'No folders',
+      azureBlobName: 'emptypath',
+      blobUrl: 'http://example.com/emptypath',
+      originalName: 'empty.txt',
+      path: []
+    });
+    await meta.save();
+    const found = await FileMeta.findOne({ azureBlobName: 'emptypath' });
+    expect(found).to.exist;
+    expect(found.path).to.deep.equal([]);
+  });
 });

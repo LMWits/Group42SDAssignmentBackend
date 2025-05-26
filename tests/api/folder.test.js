@@ -75,6 +75,14 @@ describe('Folder API Routes', function() {
       expect(res.body).to.include('Folder1');
       expect(res.body).to.include('Folder2');
     });
+
+    it('should return an array (empty if none exist)', async () => {
+      const res = await chai.request(app)
+        .get('/folders')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res).to.have.status(200);
+      expect(res.body).to.be.an('array');
+    });
   });
 
   describe('GET /folder/files/:folderName', () => {
@@ -183,6 +191,14 @@ describe('Folder API Routes', function() {
       const titles = res.body.map(file => file.title);
       expect(titles).to.include('File without path');
       expect(titles).to.include('File with empty path');
+    });
+
+    it('should return an array (empty if none exist)', async () => {
+      const res = await chai.request(app)
+        .get('/fileWithNoFolder')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res).to.have.status(200);
+      expect(res.body).to.be.an('array');
     });
   });
 });
