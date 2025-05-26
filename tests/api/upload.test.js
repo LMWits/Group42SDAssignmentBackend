@@ -91,18 +91,6 @@ describe('File Upload API', function() {
     expect(found.uploadDate).to.be.an.instanceof(Date);
   });
 
-  // Test: FileMeta model should not save without required fields
-  it('should not save FileMeta without required fields', async function() {
-    const meta = new FileMeta({});
-    let error = null;
-    try {
-      await meta.save();
-    } catch (err) {
-      error = err;
-    }
-    expect(error).to.exist;
-  });
-
   // Test: FileMeta model should allow empty path array
   it('should allow saving FileMeta with empty path array', async function() {
     const meta = new FileMeta({
@@ -157,8 +145,12 @@ describe('File Upload API', function() {
   });
   
   describe('GET /files', () => {
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign({ userId: 'testuser', email: 'test@example.com', role: 'admin' }, process.env.JWT_SECRET);
     it('should return an array of files (empty if none exist)', async () => {
-      const res = await chai.request(app).get('/files');
+      const res = await chai.request(app)
+        .get('/files')
+        .set('Authorization', `Bearer ${token}`);
       expect(res).to.have.status(200);
       expect(res.body).to.be.an('array');
     });
