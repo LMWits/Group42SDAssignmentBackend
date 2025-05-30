@@ -32,8 +32,6 @@ This repository contains the backend source code for the arcHive. It supports se
 ### Prerequisites
 
 - Node.js and npm  
-- Azure account and Blob Storage container  
-- MongoDB Atlas account  
 - GitHub CLI (optional)  
 
 ### Installation
@@ -46,8 +44,11 @@ npm install
 
 ### Configuration
 
-Note that these keys are private and the following is just a reference
+Change all to the urls/links in each file from the original to the localhost links which have been commented out (if there is such in the file). Thereafter you can comment out the links which were previously in the fetch statements. 
+
 Create a `.env` file in the root with the following content:
+
+Note that these keys are private and the values of the configuration strings are contained in the email we have sent you (given that we have given permission/emailed you). If you do not have the value of the keys then following is just a reference to what the env initialisation looks like: 
 
 ```env
 AZURE_STORAGE_CONNECTION_STRING
@@ -60,7 +61,7 @@ PORT=3000
 ## Running the App
 
 ```bash
-npm start
+node index.js
 ```
 
 The backend will start on `http://localhost:3000`.
